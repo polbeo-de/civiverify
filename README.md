@@ -33,7 +33,50 @@ The raw token is returned exactly once by `issue`. Only a keyed SHA-256 digest i
 - A strong `CIVICRM_SITE_KEY`
 - MariaDB/MySQL supported by the installed CiviCRM version
 
-Place this directory in CiviCRM's extension directory, refresh extensions, and enable **CiviVerify**. The `.entityType.php` mixin creates and upgrades `civicrm_civiverify_token`. Do not configure a web-accessible extension directory.
+Install the extension in the CiviCRM extensions directory configured under
+**Administration → System Settings → Directories**. The following approaches
+all create the required `civiverify/` directory there.
+
+### Clone with Git
+
+```bash
+cd /path/to/civicrm/extensions
+git clone https://github.com/polbeo-de/civiverify.git civiverify
+```
+
+### Download a release archive
+
+Use a tagged release archive for production installations. For example, with
+`curl` or `wget`:
+
+```bash
+cd /path/to/civicrm/extensions
+curl -fL -o civiverify-0.1.0-alpha.zip \
+  https://github.com/polbeo-de/civiverify/releases/download/v0.1.0-alpha/civiverify-0.1.0-alpha.zip
+unzip civiverify-0.1.0-alpha.zip
+rm civiverify-0.1.0-alpha.zip
+```
+
+```bash
+cd /path/to/civicrm/extensions
+wget -O civiverify-0.1.0-alpha.zip \
+  https://github.com/polbeo-de/civiverify/releases/download/v0.1.0-alpha/civiverify-0.1.0-alpha.zip
+unzip civiverify-0.1.0-alpha.zip
+rm civiverify-0.1.0-alpha.zip
+```
+
+You may also download the ZIP manually and unpack it in the extensions
+directory; its top-level directory is `civiverify/`.
+
+Afterwards, refresh **Administration → System Settings → Extensions** and
+enable **CiviVerify**, or run:
+
+```bash
+cv en de.polbeo.civicrm.civiverify
+```
+
+The `.entityType.php` mixin creates and upgrades `civicrm_civiverify_token`.
+Do not configure a web-accessible extension directory.
 
 ## Data model
 
