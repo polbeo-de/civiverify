@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<ruleset name="CiviVerify">
+  <description>CiviVerify coding standard.</description>
+  <file>Civi</file>
+  <file>CRM</file>
+  <file>schema</file>
+  <file>tests</file>
+  <file>civiverify.php</file>
+  <exclude-pattern>vendor/*</exclude-pattern>
+  <arg name="extensions" value="php"/>
+  <arg name="colors"/>
+  <rule ref="Generic.PHP.Syntax"/>
+  <rule ref="Generic.PHP.RequireStrictTypes"/>
+  <rule ref="Generic.Files.LineLength">
+    <properties>
+      <property name="lineLimit" value="120"/>
+      <property name="absoluteLineLimit" value="0"/>
+    </properties>
+  </rule>
+  <rule ref="Generic.Formatting.DisallowMultipleStatements"/>
+  <rule ref="Generic.PHP.ForbiddenFunctions">
+    <properties>
+      <property name="forbiddenFunctions" type="array">
+        <element key="sizeof" value="count"/>
+        <element key="is_null" value="null"/>
+      </property>
+    </properties>
+  </rule>
+</ruleset>

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<extension key="de.polbeo.civicrm.civiverify" type="module">
+  <file>civiverify</file>
+  <name>CiviVerify</name>
+  <description>Generic, single-use verification workflows for CiviCRM entities.</description>
+  <license>AGPL-3.0-or-later</license>
+  <maintainer>
+    <author>polbeo</author>
+    <email>mcc+civiverify@polbeo.de</email>
+  </maintainer>
+  <version>0.1.0-alpha</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>6.15</ver>
+  </compatibility>
+  <php_compatibility>
+    <ver>8.1</ver>
+    <ver>8.2</ver>
+    <ver>8.3</ver>
+    <ver>8.4</ver>
+  </php_compatibility>
+  <smarty_compatibility>
+    <ver>5</ver>
+  </smarty_compatibility>
+  <classloader>
+    <psr0 prefix="CRM_" path="."/>
+    <psr4 prefix="Civi\" path="Civi"/>
+  </classloader>
+  <upgrader>CiviMix\Schema\CiviVerify\AutomaticUpgrader</upgrader>
+  <mixins>
+    <mixin>entity-types-php@2.0.0</mixin>
+    <mixin>mgd-php@2.0.0</mixin>
+    <mixin>menu-xml@1.0.0</mixin>
+    <mixin>setting-php@1.0.0</mixin>
+    <mixin>smarty@1.0.3</mixin>
+    <mixin>scan-classes@1.0.0</mixin>
+  </mixins>
+  <civix>
+    <namespace>CRM/CiviVerify</namespace>
+    <format>25.10.2</format>
+  </civix>
+</extension>

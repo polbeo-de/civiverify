@@ -1,0 +1,376 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: de.polbeo.civicrm.civiverify 0.1.3\n"
+"Report-Msgid-Bugs-To: https://github.com/polbeo-de/civiverify/issues\n"
+"POT-Creation-Date: 2026-07-27 00:00+0200\n"
+"PO-Revision-Date: 2026-07-27 00:00+0200\n"
+"Last-Translator: polbeo <mcc+civiverify@polbeo.de>\n"
+"Language-Team: German <https://polbeo.de>\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Administer verification tokens"
+msgstr "Verifizierungstoken verwalten"
+
+msgid "Full access to verification data and its configuration."
+msgstr "Vollzugriff auf Verifizierungsdaten und deren Konfiguration."
+
+msgid "Issue verification tokens"
+msgstr "Verifizierungstoken erstellen"
+
+msgid "Issue new single-use verification tokens."
+msgstr "Neue Verifizierungstoken zur einmaligen Verwendung erstellen."
+
+msgid "View verification tokens"
+msgstr "Verifizierungstoken anzeigen"
+
+msgid "View non-secret verification data."
+msgstr "Nicht geheime Verifizierungsdaten einsehen."
+
+msgid "Revoke verification tokens"
+msgstr "Verifizierungstoken widerrufen"
+
+msgid "Revoke pending verification tokens."
+msgstr "Ausstehende Verifizierungstoken widerrufen."
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "Confirmation targets"
+msgstr "Bestätigungsziele"
+
+msgid "Verification drafts"
+msgstr "Verifizierungsentwürfe"
+
+msgid "Confirm request"
+msgstr "Anfrage bestätigen"
+
+msgid "Please confirm that you want to complete this verification."
+msgstr "Bitte bestätigen Sie, dass Sie diese Verifizierung abschließen möchten."
+
+msgid "Confirmation successful"
+msgstr "Bestätigung erfolgreich"
+
+msgid "Thank you. This request has been confirmed."
+msgstr "Vielen Dank. Diese Anfrage wurde bestätigt."
+
+msgid "Already confirmed"
+msgstr "Bereits bestätigt"
+
+msgid "This request has already been confirmed."
+msgstr "Diese Anfrage wurde bereits bestätigt."
+
+msgid "Link unavailable"
+msgstr "Link nicht verfügbar"
+
+msgid "This verification link is invalid or no longer available."
+msgstr "Dieser Verifizierungslink ist ungültig oder nicht mehr verfügbar."
+
+msgid "Technical error"
+msgstr "Technischer Fehler"
+
+msgid "The request could not be processed."
+msgstr "Die Anfrage konnte nicht verarbeitet werden."
+
+msgid "Default validity period (seconds)"
+msgstr "Standard-Gültigkeitsdauer (Sekunden)"
+
+msgid "Used when the selected verification draft does not define its own validity period. 86,400 seconds equal 24 hours."
+msgstr "Gilt, wenn der gewählte Verifizierungsentwurf keine eigene Gültigkeitsdauer vorgibt. 86.400 Sekunden entsprechen 24 Stunden."
+
+msgid "Minimum validity period (seconds)"
+msgstr "Minimale Gültigkeitsdauer (Sekunden)"
+
+msgid "Mandatory lower limit for every validity period. Prevents links from expiring immediately by mistake."
+msgstr "Verbindliche Untergrenze für jede Gültigkeitsdauer. Verhindert versehentlich sofort ablaufende Links."
+
+msgid "Maximum validity period (seconds)"
+msgstr "Maximale Gültigkeitsdauer (Sekunden)"
+
+msgid "Mandatory upper limit for every validity period. The default value of 2,592,000 seconds equals 30 days."
+msgstr "Verbindliche Obergrenze für jede Gültigkeitsdauer. Der Standardwert 2.592.000 Sekunden entspricht 30 Tagen."
+
+msgid "Retention period (days)"
+msgstr "Aufbewahrungsdauer (Tage)"
+
+msgid "Non-secret verification metadata is retained for this long after a token expires, for support and audit purposes."
+msgstr "So lange werden nicht geheime Verifizierungsmetadaten nach Ablauf eines Tokens für Support und Prüfung aufbewahrt."
+
+msgid "Trusted confirmation targets"
+msgstr "Vertrauenswürdige Bestätigungsziele"
+
+msgid "Administrator-managed targets for verification drafts."
+msgstr "Von Administrator:innen verwaltete Ziele für Verifizierungsentwürfe."
+
+msgid "Configuration of workflow, target, and default validity period."
+msgstr "Konfiguration von Workflow, Ziel und Standard-Gültigkeitsdauer."
+
+msgid "Custom success message"
+msgstr "Eigene Erfolgsmeldung"
+
+msgid "Optional text after a successful confirmation in CiviCRM. Leave empty to use the default message."
+msgstr "Optionaler Text nach einer erfolgreichen Bestätigung in CiviCRM. Leer lassen, um die Standardmeldung zu verwenden."
+
+msgid "Custom error message"
+msgstr "Eigene Fehlermeldung"
+
+msgid "Optional text for invalid, expired, already-used, or revoked confirmation links in CiviCRM. Leave empty to use the default message."
+msgstr "Optionaler Text für ungültige, abgelaufene, bereits verwendete oder widerrufene Bestätigungslinks in CiviCRM. Leer lassen, um die Standardmeldung zu verwenden."
+
+msgid "Enable IP hashing"
+msgstr "IP-Hashing aktivieren"
+
+msgid "Stores a one-way hash of the IP address with verification events for abuse analysis. No plain-text IP address is stored."
+msgstr "Speichert zu Verifizierungsereignissen einen Einweg-Hash der IP-Adresse zur Missbrauchsanalyse. Es wird keine IP-Adresse im Klartext gespeichert."
+
+msgid "Verification attempts per period"
+msgstr "Verifizierungsversuche je Zeitraum"
+
+msgid "Maximum number of verification attempts by one client within the configured period."
+msgstr "Maximale Zahl von Verifizierungsversuchen eines Clients innerhalb des festgelegten Zeitraums."
+
+msgid "Rate limit period (seconds)"
+msgstr "Zeitraum der Begrenzung (Sekunden)"
+
+msgid "Period to which the attempt limit applies. The default value of 900 seconds equals 15 minutes."
+msgstr "Zeitraum, auf den sich die Begrenzung der Versuche bezieht. Der Standardwert 900 Sekunden entspricht 15 Minuten."
+
+msgid "Allow direct confirmation by GET"
+msgstr "Direkte Bestätigung per GET erlauben"
+
+msgid "When enabled, opening a CiviCRM confirmation link consumes the token. Leave disabled to require explicit confirmation and protect against mail scanners."
+msgstr "Wenn aktiviert, verbraucht bereits das Öffnen eines CiviCRM-Bestätigungslinks das Token. Deaktiviert lassen, um eine ausdrückliche Bestätigung zu verlangen und Mail-Scanner abzusichern."
+
+msgid "CiviVerify – Confirmation targets"
+msgstr "CiviVerify – Bestätigungsziele"
+
+msgid "Technical key"
+msgstr "Technischer Schlüssel"
+
+msgid "Label"
+msgstr "Bezeichnung"
+
+msgid "Route or HTTPS URL"
+msgstr "Route oder HTTPS-URL"
+
+msgid "Save confirmation target"
+msgstr "Bestätigungsziel speichern"
+
+msgid "Use only lowercase letters, digits, underscores, or hyphens."
+msgstr "Nur Kleinbuchstaben, Ziffern, Unterstriche oder Bindestriche verwenden."
+
+msgid "Use an internal route or an HTTPS URL."
+msgstr "Eine interne Route oder eine HTTPS-URL verwenden."
+
+msgid "Confirmation target saved."
+msgstr "Bestätigungsziel gespeichert."
+
+msgid "Saved"
+msgstr "Gespeichert"
+
+msgid "CiviVerify – Verification drafts"
+msgstr "CiviVerify – Verifizierungsentwürfe"
+
+msgid "Technical workflow name"
+msgstr "Technischer Workflow-Name"
+
+msgid "Confirmation target"
+msgstr "Bestätigungsziel"
+
+msgid "Save verification draft"
+msgstr "Verifizierungsentwurf speichern"
+
+msgid "Use only lowercase letters, digits, and underscores."
+msgstr "Nur Kleinbuchstaben, Ziffern und Unterstriche verwenden."
+
+msgid "The validity period is outside the range configured in CiviVerify."
+msgstr "Die Gültigkeitsdauer liegt außerhalb des in CiviVerify konfigurierten Bereichs."
+
+msgid "Select a configured confirmation target."
+msgstr "Ein konfiguriertes Bestätigungsziel auswählen."
+
+msgid "Verification draft saved."
+msgstr "Verifizierungsentwurf gespeichert."
+
+msgid "Purpose"
+msgstr "Zweck"
+
+msgid "Validity period in seconds"
+msgstr "Gültigkeitsdauer in Sekunden"
+
+msgid "Message template"
+msgstr "Nachrichtenvorlage"
+
+msgid "Link verification to"
+msgstr "Verifizierung verknüpfen mit"
+
+msgid "Additional template parameters (JSON object)"
+msgstr "Zusätzliche Vorlagenparameter (JSON-Objekt)"
+
+msgid "The purpose must be a valid machine-readable key."
+msgstr "Der Zweck muss ein gültiger maschinenlesbarer Schlüssel sein."
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "The validity period must be between %1 and %2 seconds."
+msgstr "Die Gültigkeitsdauer muss zwischen %1 und %2 Sekunden liegen."
+
+msgid "The template parameters must be a JSON object."
+msgstr "Die Vorlagenparameter müssen ein JSON-Objekt sein."
+
+msgid "The template parameters contain invalid JSON."
+msgstr "Die Vorlagenparameter enthalten ungültiges JSON."
+
+msgid "Contact only"
+msgstr "Nur Kontakt"
+
+msgid "Purpose (optional exact match)"
+msgstr "Zweck (optionale exakte Übereinstimmung)"
+
+msgid "Linked entity (optional)"
+msgstr "Verknüpfte Entität (optional)"
+
+msgid "- Any or no linked entity -"
+msgstr "- Beliebige oder keine verknüpfte Entität -"
+
+msgid "CiviVerify: Clean up verification tokens"
+msgstr "CiviVerify: Verifizierungstoken bereinigen"
+
+msgid "Marks expired verification tokens and deletes unneeded data after the configured retention period."
+msgstr "Markiert abgelaufene Verifizierungstoken und löscht nicht mehr benötigte Daten nach der konfigurierten Aufbewahrungsdauer."
+
+msgid "CiviVerify: Verification issued"
+msgstr "CiviVerify: Verifizierung erstellt"
+
+msgid "CiviVerify: Verification confirmed"
+msgstr "CiviVerify: Verifizierung bestätigt"
+
+msgid "CiviVerify: Verification revoked"
+msgstr "CiviVerify: Verifizierung widerrufen"
+
+msgid "CiviVerify: Verification expired"
+msgstr "CiviVerify: Verifizierung abgelaufen"
+
+msgid "CiviVerify: Issue and send verification"
+msgstr "CiviVerify: Verifizierung erstellen und versenden"
+
+msgid "Edit confirmation target"
+msgstr "Bestätigungsziel bearbeiten"
+
+msgid "Add confirmation target"
+msgstr "Bestätigungsziel hinzufügen"
+
+msgid "External targets must use HTTPS, except local development environments. A technical key cannot be changed after it is created."
+msgstr "Externe Ziele müssen HTTPS verwenden, ausgenommen lokale Entwicklungsumgebungen. Ein technischer Schlüssel kann nach dem Anlegen nicht geändert werden."
+
+msgid "Configured confirmation targets"
+msgstr "Eingerichtete Bestätigungsziele"
+
+msgid "Key"
+msgstr "Schlüssel"
+
+msgid "Route"
+msgstr "Route"
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgid "Edit verification draft"
+msgstr "Verifizierungsentwurf bearbeiten"
+
+msgid "Add verification draft"
+msgstr "Verifizierungsentwurf hinzufügen"
+
+msgid "Extensions select the workflow; only this administration page defines its confirmation target. The technical workflow name cannot be changed after it is created."
+msgstr "Erweiterungen wählen den Workflow; nur diese Verwaltungsseite legt sein Bestätigungsziel fest. Der technische Workflow-Name kann nach dem Anlegen nicht geändert werden."
+
+msgid "Configured verification drafts"
+msgstr "Eingerichtete Verifizierungsentwürfe"
+
+msgid "Workflow"
+msgstr "Workflow"
+
+msgid "Target"
+msgstr "Ziel"
+
+msgid "Validity period (seconds)"
+msgstr "Gültigkeitsdauer (Sekunden)"
+
+msgid "Confirm"
+msgstr "Bestätigen"
+
+msgid "Verification Token"
+msgstr "Verifizierungstoken"
+
+msgid "Verification Tokens"
+msgstr "Verifizierungstoken"
+
+msgid "Single-use, time-limited verification transactions."
+msgstr "Einmalige, zeitlich begrenzte Verifizierungsvorgänge."
+
+msgid "Public UUID"
+msgstr "Öffentliche UUID"
+
+msgid "Non-secret public identifier."
+msgstr "Nicht geheimer öffentlicher Identifikator."
+
+msgid "Contact"
+msgstr "Kontakt"
+
+msgid "Entity Name"
+msgstr "Entitätsname"
+
+msgid "Entity ID"
+msgstr "Entitäts-ID"
+
+msgid "Token Hash"
+msgstr "Token-Hash"
+
+msgid "Keyed SHA-256 digest. Never expose through public APIs."
+msgstr "Schlüsselgebundener SHA-256-Hash. Niemals über öffentliche APIs ausgeben."
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Created Date"
+msgstr "Erstellt am"
+
+msgid "Expires Date"
+msgstr "Läuft ab am"
+
+msgid "Expired Date"
+msgstr "Abgelaufen am"
+
+msgid "Used Date"
+msgstr "Verwendet am"
+
+msgid "Revoked Date"
+msgstr "Widerrufen am"
+
+msgid "Created By"
+msgstr "Erstellt von"
+
+msgid "Created IP Hash"
+msgstr "IP-Hash bei Erstellung"
+
+msgid "Used IP Hash"
+msgstr "IP-Hash bei Verwendung"
+
+msgid "Metadata"
+msgstr "Metadaten"
+
+msgid "Result Metadata"
+msgstr "Ergebnis-Metadaten"
+
+msgid "Use Count"
+msgstr "Verwendungsanzahl"
+
+msgid "CiviVerify - Verification request"
+msgstr "CiviVerify – Verifizierungsanfrage"

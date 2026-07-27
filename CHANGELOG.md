@@ -1,0 +1,47 @@
+# Changelog
+
+All notable changes to this extension are documented in this file. Versions
+follow the extension version in `info.xml`; unreleased changes are recorded
+first and moved into a dated release section when deployed.
+
+## Unreleased
+
+## 0.1.0-alpha - 2026-07-27
+
+- Correct the public CiviCRM extension key to
+  `de.polbeo.civicrm.civiverify` and provide a migration path for existing
+  installations.
+- Keep the legacy HMAC context for issued verification tokens and IP digests,
+  so links issued under the former key remain verifiable until they expire.
+
+
+- Make English the source and fallback language for all CiviVerify interface
+  strings, including administrative forms, settings, permissions, public
+  confirmation states, validation messages, and scheduled-job labels.
+- Add the standard CiviCRM Gettext catalogue structure with a complete German
+  `de_DE` translation and compilation guidance for additional locales.
+- Ensure Smarty template strings use the extension translation domain.
+
+
+- Add the CiviCRM administration pages for verification settings,
+  confirmation targets, and reusable verify drafts.
+- Let verify drafts define their target key, purpose, expiry, message
+  template, and safe template parameters; consumers can select a draft rather
+  than supplying a redirect target.
+- Add administrator-managed confirmation targets without overwriting existing
+  configuration.
+- Add the nightly managed CiviCRM job that cleans up expired verification
+  tokens and emits the corresponding lifecycle events.
+- Provide German labels, descriptions, and help texts for the administrative
+  interface.
+- Make confirmation URL generation resolve a configured target by its stable
+  key, while retaining scanner-safe confirmation handling.
+
+
+- Add `CiviVerifyToken` entity and protected APIv4 access.
+- Add secure issue, inspect, verify, revoke, and cleanup actions.
+- Add scanner-safe two-step public confirmation route.
+- Add generic lifecycle events, retention, settings, and lightweight rate limiting.
+- Add optional native CiviRules triggers for issued, verified, revoked, and expired verifications, with purpose and bound-entity filters.
+- Add template-driven `issueAndSend`, CiviVerify mail tokens, a managed default workflow, and a no-code CiviRules mail action.
+- Add unit tests, architecture decision, security and integration documentation.

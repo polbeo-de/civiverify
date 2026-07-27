@@ -1,0 +1,23 @@
+{
+  "name": "polbeo/de.polbeo.civicrm.civiverify",
+  "description": "Generic verification tokens for CiviCRM entities",
+  "type": "civicrm-ext",
+  "license": "AGPL-3.0-or-later",
+  "require": {
+    "php": "^8.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6 || ^10.5",
+    "squizlabs/php_codesniffer": "^3.10",
+    "symfony/event-dispatcher": "^5.4 || ^6.4 || ^7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Civi\\": "Civi/"
+    }
+  },
+  "scripts": {
+    "lint": "phpcs",
+    "test": "phpunit"
+  }
+}

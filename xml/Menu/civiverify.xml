@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/admin/setting/civiverify</path>
+    <page_callback>CRM_Admin_Form_Generic</page_callback>
+    <title>CiviVerify: Settings</title>
+    <access_arguments>administer verification tokens</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/admin/civiverify/targets</path>
+    <page_callback>CRM_CiviVerify_Form_ConfirmationTargets</page_callback>
+    <title>CiviVerify: Confirmation targets</title>
+    <access_arguments>administer verification tokens</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/admin/civiverify/verify-drafts</path>
+    <page_callback>CRM_CiviVerify_Form_VerifyDrafts</page_callback>
+    <title>CiviVerify: Verification drafts</title>
+    <access_arguments>administer verification tokens</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/verify</path>
+    <page_callback>CRM_CiviVerify_Page_Confirm</page_callback>
+    <title>Confirm verification</title>
+    <access_callback>1</access_callback>
+    <is_public>true</is_public>
+  </item>
+  <item>
+    <path>civicrm/civiverify/civirules/trigger</path>
+    <page_callback>CRM_CiviVerify_Form_CiviRulesTrigger</page_callback>
+    <title>CiviVerify: Trigger filter</title>
+    <access_arguments>administer CiviCRM; administer CiviRules</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/civiverify/civirules/action/issue-send</path>
+    <page_callback>CRM_CiviVerify_Form_CiviRulesIssueAndSend</page_callback>
+    <title>CiviVerify: Issue and send action</title>
+    <access_arguments>administer CiviCRM; administer CiviRules</access_arguments>
+  </item>
+</menu>
