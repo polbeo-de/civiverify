@@ -7,11 +7,6 @@
 *.swp
 .DS_Store
 
-# Local Codex/agent instructions and workspace configuration.
-AGENTS.md
-.agents/
-.codex/
-
 # Local operator documentation; it is not part of the public extension.
 docs/benutzerhandbuch.md
 docs/audits/

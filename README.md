@@ -130,6 +130,8 @@ The successful state change commits before the event is dispatched. Listener fai
 
 Domain settings define default/minimum/maximum TTL (24 hours/60 seconds/30 days), retention (90 days), optional messages, optional persistent IP hashing, rate-limit attempts/window (20/15 minutes), and direct GET confirmation (disabled). Under **Administration → CiviVerify**, administrators maintain trusted confirmation targets and verification drafts separately: every draft selects one target and can therefore send distinct workflows to distinct external frontends. A target may be `civicrm/verify` or an administrator-controlled absolute HTTPS URL. A trusted external frontend must keep GET side-effect free and consume the token only after an explicit, CSRF-protected POST. The scanner-safe two-step flow is the default. Direct GET consumption exists only as an explicit compatibility opt-in and should remain disabled for emailed links.
 
+For local development only, an absolute HTTP target on the loopback hosts `localhost` or `127.0.0.1` is also accepted. This narrow exception is for single-machine testing and must not be used by shared or production CiviCRM installations.
+
 No secret is stored in this repository. Token and IP HMAC keys are independently derived from `CIVICRM_SITE_KEY` using HKDF domain separation. Rotating the site key invalidates all outstanding links and changes IP pseudonyms; schedule rotation accordingly.
 
 ## Cleanup and scheduled jobs
