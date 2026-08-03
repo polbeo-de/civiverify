@@ -51,18 +51,18 @@ Use a tagged release archive for production installations. For example, with
 
 ```bash
 cd /path/to/civicrm/extensions
-curl -fL -o civiverify-0.1.0-alpha.zip \
-  https://github.com/polbeo-de/civiverify/releases/download/v0.1.0-alpha/civiverify-0.1.0-alpha.zip
-unzip civiverify-0.1.0-alpha.zip
-rm civiverify-0.1.0-alpha.zip
+curl -fL -o civiverify-0.1.0-beta.1.zip \
+  https://github.com/polbeo-de/civiverify/releases/download/v0.1.0-beta.1/civiverify-0.1.0-beta.1.zip
+unzip civiverify-0.1.0-beta.1.zip
+rm civiverify-0.1.0-beta.1.zip
 ```
 
 ```bash
 cd /path/to/civicrm/extensions
-wget -O civiverify-0.1.0-alpha.zip \
-  https://github.com/polbeo-de/civiverify/releases/download/v0.1.0-alpha/civiverify-0.1.0-alpha.zip
-unzip civiverify-0.1.0-alpha.zip
-rm civiverify-0.1.0-alpha.zip
+wget -O civiverify-0.1.0-beta.1.zip \
+  https://github.com/polbeo-de/civiverify/releases/download/v0.1.0-beta.1/civiverify-0.1.0-beta.1.zip
+unzip civiverify-0.1.0-beta.1.zip
+rm civiverify-0.1.0-beta.1.zip
 ```
 
 You may also download the ZIP manually and unpack it in the extensions
@@ -75,7 +75,8 @@ enable **CiviVerify**, or run:
 cv en de.polbeo.civicrm.civiverify
 ```
 
-The `.entityType.php` mixin creates and upgrades `civicrm_civiverify_token`.
+The `.entityType.php` mixin creates and upgrades the token and internal
+event-outbox tables.
 Do not configure a web-accessible extension directory.
 
 ## Data model
@@ -145,6 +146,7 @@ Administrative actions:
 cv api4 CiviVerifyToken.inspect id=17
 cv api4 CiviVerifyToken.revoke id=17 reason='Request cancelled'
 cv api4 CiviVerifyToken.cleanup batch_size=200 retention_days=90
+cv api4 CiviVerifyToken.dispatchOutbox batch_size=50
 cv api4 CiviVerifyToken.verify token='RAW_TOKEN'
 ```
 
@@ -167,7 +169,7 @@ The initial URL necessarily contains the bearer token and may reach access logs.
 
 Each event is a `Civi\CiviVerify\Event\TokenEvent`. `getVerification()` returns lifecycle and binding fields plus metadata, but never the raw token, token digest, secret, or IP digest. See [`examples/VerificationSubscriber.php`](examples/VerificationSubscriber.php).
 
-The successful state change commits before the event is dispatched. Listener failure therefore does not make a used token reusable. A crash between commit and dispatch can lose an event; version 1 intentionally has no transactional outbox. Follow-up handlers should be idempotent and operational monitoring should detect failures.
+The token change and a sanitized event snapshot commit in one database transaction. The outbox job dispatches the event afterwards. Delivery is **at least once**: a failure is retried with backoff and a lease recovers events from a crashed worker. After ten failed attempts, an event is retained as failed for administrator diagnosis rather than retried indefinitely. Follow-up handlers must therefore be idempotent.
 
 ## Configuration
 
@@ -179,9 +181,11 @@ No secret is stored in this repository. Token and IP HMAC keys are independently
 
 ## Cleanup and scheduled jobs
 
-CiviVerify installs the active scheduled job **CiviVerify: Verifizierungstoken bereinigen**. Its first run is scheduled for the next 02:42 local server time and it then runs daily through CiviCRM's standard job runner. It calls `CiviVerifyToken.cleanup` with a batch size of 200 and uses the configured retention period. Administrators may change the schedule or deactivate the job under **Administration → System → Scheduled Jobs**.
+CiviVerify installs two active scheduled jobs. **CiviVerify: Clean up verification tokens** first runs at 02:42 local server time and then runs daily. **CiviVerify: Deliver verification events** uses CiviCRM's `Always` frequency and must therefore be invoked by the CiviCRM job runner every minute; it dispatches a batch of queued lifecycle events. Administrators may freely change either schedule or deactivate a job under **Administration → System → Scheduled Jobs**.
 
-The cleanup claims expired rows in ordered, locked batches, persists `expired`, emits the expired event once for claimed rows, and deletes terminal rows older than retention. Repeated runs are idempotent. The post-commit event limitation described above also applies to expired/revoked events. Domain extensions should subscribe to the expiry event to perform their own state transitions; CiviVerify never deletes domain entities itself.
+Under **Administration → CiviVerify → Event delivery queue**, administrators can inspect the last 100 deliveries with their status, attempts, scheduled delivery time, and the most recent error. Payloads are intentionally not displayed.
+
+The cleanup claims expired rows in ordered, locked batches, persists `expired`, queues the expiry event in the same transaction, and deletes terminal rows plus terminal outbox records older than retention. Repeated runs are idempotent. Domain extensions should subscribe to the expiry event to perform their own state transitions; CiviVerify never deletes domain entities itself.
 
 ## CiviRules
 
@@ -222,8 +226,9 @@ Their Smarty equivalents use camel case, for example `{$civiverifyPurpose}`. Nor
 3. The transactional message includes `confirmation_url`.
 4. The customer opens the link and explicitly confirms.
 5. `civiverify.token.verified` fires.
-6. A purpose- and entity-filtered CiviRules rule changes the bound Case to “provisioning requested”. A Symfony subscriber remains available when custom code is preferable.
-7. The existing queue runner provisions it.
+6. The outbox job dispatches `civiverify.token.verified`.
+7. A purpose- and entity-filtered CiviRules rule changes the bound Case to “provisioning requested”. A Symfony subscriber remains available when custom code is preferable.
+8. The existing queue runner provisions it.
 
 The Case status change and provisioning are deliberately outside this generic extension.
 
@@ -251,7 +256,6 @@ The scripts create only temporary contacts/tokens and clean them up, including a
 
 ## Known limitations
 
-- No transactional outbox; a post-commit crash can lose an event.
 - Rate limiting uses CiviCRM's cache and is intentionally lightweight; high-volume deployments may replace it with an atomic shared limiter.
 - Generic entity deletion cannot be enforced by a database foreign key.
 - The confirmation token can appear in upstream request logs unless those logs redact the route's query string.

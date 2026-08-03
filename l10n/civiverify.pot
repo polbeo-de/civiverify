@@ -4,9 +4,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: de.polbeo.civicrm.civiverify 0.1.3\n"
+"Project-Id-Version: de.polbeo.civicrm.civiverify 0.1.0-beta.1\n"
 "Report-Msgid-Bugs-To: https://github.com/polbeo-de/civiverify/issues\n"
-"POT-Creation-Date: 2026-07-27 20:49+0200\n"
+"POT-Creation-Date: 2026-08-03 00:00+0200\n"
 "PO-Revision-Date: 2026-07-27 00:00+0200\n"
 "Last-Translator: polbeo <mcc+civiverify@polbeo.de>\n"
 "Language-Team: CiviVerify translators <mcc+civiverify@polbeo.de>\n"
@@ -204,6 +204,90 @@ msgid ""
 msgstr ""
 
 msgid "CiviVerify - Verification request"
+msgstr ""
+
+msgid "Verification event outbox"
+msgstr ""
+
+msgid "Transactional delivery queue for verification lifecycle events."
+msgstr ""
+
+msgid "Verification token ID"
+msgstr ""
+
+msgid "Event name"
+msgstr ""
+
+msgid "Event payload"
+msgstr ""
+
+msgid "Created date"
+msgstr ""
+
+msgid "Available date"
+msgstr ""
+
+msgid "Delivery attempts"
+msgstr ""
+
+msgid "Locked until"
+msgstr ""
+
+msgid "Lock token"
+msgstr ""
+
+msgid "Delivered date"
+msgstr ""
+
+msgid "Failed date"
+msgstr ""
+
+msgid "Last delivery error"
+msgstr ""
+
+msgid "CiviVerify: Deliver verification events"
+msgstr ""
+
+msgid "Delivers queued verification lifecycle events after their token changes have committed."
+msgstr ""
+
+msgid "CiviVerify – Event delivery queue"
+msgstr ""
+
+msgid "Event delivery queue"
+msgstr ""
+
+msgid "Delivered"
+msgstr ""
+
+msgid "Failed"
+msgstr ""
+
+msgid "Processing"
+msgstr ""
+
+msgid "Retry scheduled"
+msgstr ""
+
+msgid "Queued"
+msgstr ""
+
+msgid "The most recent 100 lifecycle-event deliveries are shown. Event payloads are not displayed."
+msgstr ""
+
+msgid "Event"
+msgstr ""
+
+msgid "Attempts"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Next delivery"
+msgstr ""
+
+msgid "Last error"
 msgstr ""
 
 msgid "Verification Token"

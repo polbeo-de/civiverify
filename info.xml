@@ -8,8 +8,8 @@
     <author>polbeo</author>
     <email>mcc+civiverify@polbeo.de</email>
   </maintainer>
-  <version>0.1.0-alpha</version>
-  <develStage>alpha</develStage>
+  <version>0.1.0-beta.1</version>
+  <develStage>beta</develStage>
   <compatibility>
     <ver>6.15</ver>
   </compatibility>

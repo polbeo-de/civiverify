@@ -10,6 +10,7 @@ final class VerificationVerifier {
 
   public function __construct(
     private readonly VerificationRepository $repository,
+    private readonly OutboxRepository $outbox,
     private readonly TokenHasher $hasher,
   ) {}
 
@@ -19,10 +20,22 @@ final class VerificationVerifier {
       return new VerificationResult('invalid');
     }
     $now = gmdate('Y-m-d H:i:s');
-    if ($this->repository->consume($hash, $now, $ipHash)) {
-      $record = $this->repository->findByHash($hash);
-      \Civi::dispatcher()->dispatch(TokenEvent::VERIFIED, new TokenEvent($record ?? []));
-      return new VerificationResult('verified', $record);
+    $tx = new \CRM_Core_Transaction();
+    try {
+      if ($this->repository->consume($hash, $now, $ipHash)) {
+        $record = $this->repository->findByHash($hash);
+        if ($record === NULL) {
+          throw new \RuntimeException('Consumed verification record was not found.');
+        }
+        $this->outbox->enqueue((int) $record['id'], TokenEvent::VERIFIED, $record, $now);
+        $tx->commit();
+        return new VerificationResult('verified', $record);
+      }
+      $tx->commit();
+    }
+    catch (\Throwable $e) {
+      $tx->rollback();
+      throw $e;
     }
     $record = $this->repository->findByHash($hash);
     if ($record === NULL) {

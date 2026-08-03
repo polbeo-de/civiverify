@@ -6,6 +6,21 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.0-beta.1 - 2026-08-03
+
+- Add an administrative, payload-free view of the verification event delivery queue.
+
+- Document the required minute-level CiviCRM job-runner cadence for timely
+  verification-event delivery.
+
+- Add a transactional outbox for all CiviVerify lifecycle events. Token state
+  changes and their event records now commit together; a configurable CiviCRM
+  job delivers events asynchronously with recoverable leases and retry backoff.
+  Existing installations create the required outbox table through an upgrader.
+
+- Load the CiviMix schema upgrader during activation on a fresh CiviCRM
+  deployment, including the required Civix bootstrap and dynamic autoloader.
+
 ## 0.1.0-alpha - 2026-07-27
 
 - Correct the public CiviCRM extension key to

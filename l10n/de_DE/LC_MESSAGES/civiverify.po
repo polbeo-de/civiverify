@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: de.polbeo.civicrm.civiverify 0.1.3\n"
+"Project-Id-Version: de.polbeo.civicrm.civiverify 0.1.0-beta.1\n"
 "Report-Msgid-Bugs-To: https://github.com/polbeo-de/civiverify/issues\n"
 "POT-Creation-Date: 2026-07-27 00:00+0200\n"
-"PO-Revision-Date: 2026-07-27 00:00+0200\n"
+"PO-Revision-Date: 2026-08-03 00:00+0200\n"
 "Last-Translator: polbeo <mcc+civiverify@polbeo.de>\n"
 "Language-Team: German <https://polbeo.de>\n"
 "Language: de_DE\n"
@@ -374,3 +374,87 @@ msgstr "Verwendungsanzahl"
 
 msgid "CiviVerify - Verification request"
 msgstr "CiviVerify – Verifizierungsanfrage"
+
+msgid "Verification event outbox"
+msgstr "Zustellwarteschlange für Verifizierungsereignisse"
+
+msgid "Transactional delivery queue for verification lifecycle events."
+msgstr "Transaktionale Zustellwarteschlange für Verifizierungs-Lebenszyklusereignisse."
+
+msgid "Verification token ID"
+msgstr "Verifizierungstoken-ID"
+
+msgid "Event name"
+msgstr "Ereignisname"
+
+msgid "Event payload"
+msgstr "Ereignisdaten"
+
+msgid "Created date"
+msgstr "Erstellt am"
+
+msgid "Available date"
+msgstr "Verfügbar ab"
+
+msgid "Delivery attempts"
+msgstr "Zustellversuche"
+
+msgid "Locked until"
+msgstr "Gesperrt bis"
+
+msgid "Lock token"
+msgstr "Sperr-Token"
+
+msgid "Delivered date"
+msgstr "Zugestellt am"
+
+msgid "Failed date"
+msgstr "Fehlgeschlagen am"
+
+msgid "Last delivery error"
+msgstr "Letzter Zustellfehler"
+
+msgid "CiviVerify: Deliver verification events"
+msgstr "CiviVerify: Verifizierungsereignisse zustellen"
+
+msgid "Delivers queued verification lifecycle events after their token changes have committed."
+msgstr "Stellt vorgemerkte Verifizierungs-Lebenszyklusereignisse zu, nachdem ihre Token-Änderungen gespeichert wurden."
+
+msgid "CiviVerify – Event delivery queue"
+msgstr "CiviVerify – Ereignis-Zustellwarteschlange"
+
+msgid "Event delivery queue"
+msgstr "Ereignis-Zustellwarteschlange"
+
+msgid "Delivered"
+msgstr "Zugestellt"
+
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
+msgid "Processing"
+msgstr "In Bearbeitung"
+
+msgid "Retry scheduled"
+msgstr "Erneuter Versuch geplant"
+
+msgid "Queued"
+msgstr "Vorgemerkt"
+
+msgid "The most recent 100 lifecycle-event deliveries are shown. Event payloads are not displayed."
+msgstr "Es werden die letzten 100 Zustellungen von Lebenszyklusereignissen angezeigt. Ereignisdaten werden nicht angezeigt."
+
+msgid "Event"
+msgstr "Ereignis"
+
+msgid "Attempts"
+msgstr "Versuche"
+
+msgid "Created"
+msgstr "Erstellt"
+
+msgid "Next delivery"
+msgstr "Nächste Zustellung"
+
+msgid "Last error"
+msgstr "Letzter Fehler"

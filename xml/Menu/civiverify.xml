@@ -19,6 +19,12 @@
     <access_arguments>administer verification tokens</access_arguments>
   </item>
   <item>
+    <path>civicrm/admin/civiverify/outbox</path>
+    <page_callback>CRM_CiviVerify_Form_Outbox</page_callback>
+    <title>CiviVerify: Event delivery queue</title>
+    <access_arguments>administer verification tokens</access_arguments>
+  </item>
+  <item>
     <path>civicrm/verify</path>
     <page_callback>CRM_CiviVerify_Page_Confirm</page_callback>
     <title>Confirm verification</title>

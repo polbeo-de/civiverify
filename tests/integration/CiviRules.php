@@ -109,6 +109,13 @@ try {
       ->single()['job_title'];
   };
 
+  $dispatch = static function (): void {
+    civicrm_api4('CiviVerifyToken', 'dispatchOutbox', [
+      'checkPermissions' => FALSE,
+      'batchSize' => 50,
+    ]);
+  };
+
   $issue = static function (string $purpose) use ($contactId, &$tokenIds): array {
     $issued = civicrm_api4('CiviVerifyToken', 'issue', [
       'checkPermissions' => FALSE,
@@ -128,6 +135,7 @@ try {
     'checkPermissions' => FALSE,
     'token' => $mismatch['token'],
   ]);
+  $dispatch();
   $assert($getJobTitle() === 'not fired', 'Purpose filter did not suppress the rule.');
 
   $matching = $issue('integration.civirules.verified');
@@ -136,11 +144,13 @@ try {
     'token' => $matching['token'],
   ])->first();
   $assert($verified['result'] === 'verified', 'Matching verification failed.');
+  $dispatch();
   $assert($getJobTitle() === 'verified fired', 'Verified action did not update the bound entity.');
 
   $setJobTitle('not fired');
   $addRule('civiverify_token_issued', 'integration.civirules.issued', 'issued fired');
   $issue('integration.civirules.issued');
+  $dispatch();
   $assert($getJobTitle() === 'issued fired', 'Issued action did not update the bound entity.');
 
   $setJobTitle('not fired');
@@ -151,6 +161,7 @@ try {
     'id' => (int) $revocable['id'],
     'reason' => 'CiviRules integration test',
   ]);
+  $dispatch();
   $assert($getJobTitle() === 'revoked fired', 'Revoked action did not update the bound entity.');
 
   $setJobTitle('not fired');
@@ -165,6 +176,7 @@ try {
     'batchSize' => 50,
     'retentionDays' => 365,
   ]);
+  $dispatch();
   $assert($getJobTitle() === 'expired fired', 'Expired action did not update the bound entity.');
 
   printf("PASS: CiviVerify CiviRules integration test (%d assertions)\n", $assertions);
@@ -178,6 +190,7 @@ finally {
   }
   if ($tokenIds !== []) {
     $ids = implode(',', array_map('intval', $tokenIds));
+    CRM_Core_DAO::executeQuery('DELETE FROM civicrm_civiverify_outbox WHERE token_id IN (' . $ids . ')');
     CRM_Core_DAO::executeQuery('DELETE FROM civicrm_civiverify_token WHERE id IN (' . $ids . ')');
   }
   if ($contactId !== NULL) {

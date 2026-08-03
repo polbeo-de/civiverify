@@ -85,7 +85,7 @@ final class VerificationRepository {
     return $dao->affectedRows() === 1;
   }
 
-  public function expireBatch(int $limit, string $now): array {
+  public function expireBatch(int $limit, string $now, callable $onExpired): array {
     $tx = new \CRM_Core_Transaction();
     try {
       $dao = \CRM_Core_DAO::executeQuery(
@@ -102,6 +102,12 @@ final class VerificationRepository {
           'UPDATE ' . self::TABLE . ' SET status = %1, expired_date = %2 WHERE id IN (' . implode(',', $ids) . ')',
           [1 => ['expired', 'String'], 2 => [$now, 'String']]
         );
+        foreach ($ids as $id) {
+          $record = $this->findById($id);
+          if ($record !== NULL) {
+            $onExpired($record);
+          }
+        }
       }
       $tx->commit();
       return $ids;

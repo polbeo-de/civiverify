@@ -10,6 +10,7 @@ final class VerificationIssuer {
 
   public function __construct(
     private readonly VerificationRepository $repository,
+    private readonly OutboxRepository $outbox,
     private readonly TokenHasher $hasher,
     private readonly IpHasher $ipHasher,
   ) {}
@@ -39,18 +40,18 @@ final class VerificationIssuer {
     $tx = new \CRM_Core_Transaction();
     try {
       $id = $this->repository->insert($values);
+      $public = $values;
+      unset($public['token_hash'], $public['created_ip_hash']);
+      $public['id'] = $id;
+      $public['status'] = 'pending';
+      $public['metadata'] = $input['metadata'] ?? NULL;
+      $this->outbox->enqueue($id, TokenEvent::ISSUED, $public, $values['created_date']);
       $tx->commit();
     }
     catch (\Throwable $e) {
       $tx->rollback();
       throw $e;
     }
-    $public = $values;
-    unset($public['token_hash']);
-    $public['id'] = $id;
-    $public['status'] = 'pending';
-    $public['metadata'] = $input['metadata'] ?? NULL;
-    \Civi::dispatcher()->dispatch(TokenEvent::ISSUED, new TokenEvent($public));
     return $public + ['token' => $rawToken];
   }
 
