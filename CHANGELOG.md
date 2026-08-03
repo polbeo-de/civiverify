@@ -6,6 +6,11 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.0-beta.2 - 2026-08-03
+
+- Correct the outbox migration for installations that had already reached
+  schema revision 1000 before the transactional outbox was introduced.
+
 ## 0.1.0-beta.1 - 2026-08-03
 
 - Add an administrative, payload-free view of the verification event delivery queue.
