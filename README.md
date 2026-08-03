@@ -51,18 +51,18 @@ Use a tagged release archive for production installations. For example, with
 
 ```bash
 cd /path/to/civicrm/extensions
-curl -fL -o civiverify-0.1.0-beta.1.zip \
-  https://github.com/polbeo-de/civiverify/releases/download/v0.1.0-beta.1/civiverify-0.1.0-beta.1.zip
-unzip civiverify-0.1.0-beta.1.zip
-rm civiverify-0.1.0-beta.1.zip
+curl -fL -o civiverify-0.1.0-beta.2.zip \
+  https://github.com/polbeo-de/civiverify/releases/download/v0.1.0-beta.2/civiverify-0.1.0-beta.2.zip
+unzip civiverify-0.1.0-beta.2.zip
+rm civiverify-0.1.0-beta.2.zip
 ```
 
 ```bash
 cd /path/to/civicrm/extensions
-wget -O civiverify-0.1.0-beta.1.zip \
-  https://github.com/polbeo-de/civiverify/releases/download/v0.1.0-beta.1/civiverify-0.1.0-beta.1.zip
-unzip civiverify-0.1.0-beta.1.zip
-rm civiverify-0.1.0-beta.1.zip
+wget -O civiverify-0.1.0-beta.2.zip \
+  https://github.com/polbeo-de/civiverify/releases/download/v0.1.0-beta.2/civiverify-0.1.0-beta.2.zip
+unzip civiverify-0.1.0-beta.2.zip
+rm civiverify-0.1.0-beta.2.zip
 ```
 
 You may also download the ZIP manually and unpack it in the extensions
