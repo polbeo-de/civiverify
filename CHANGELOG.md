@@ -6,6 +6,10 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.0-beta.3 - 2026-08-03
+
+- Correct the public README status from alpha to beta.
+
 ## 0.1.0-beta.2 - 2026-08-03
 
 - Correct the outbox migration for installations that had already reached

@@ -8,7 +8,7 @@ Release history is maintained in [CHANGELOG.md](CHANGELOG.md).
 
 ## Status and support
 
-CiviVerify is currently an alpha extension. For support, maintenance, or
+CiviVerify is currently a beta extension. For support, maintenance, or
 coordination, contact [mcc+civiverify@polbeo.de](mailto:mcc+civiverify@polbeo.de).
 For security-sensitive reports, follow [SECURITY.md](SECURITY.md).
 
