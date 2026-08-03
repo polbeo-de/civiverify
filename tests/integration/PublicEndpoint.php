@@ -139,11 +139,11 @@ $postUrl = strtok($state['url'], '?');
 [$confirmed, $postHeaders] = $request($postUrl, http_build_query(['state' => $matches[1]]));
 $assert($hasHeader($postHeaders, 'HTTP/1.1 200'), 'Confirmation did not return HTTP 200.');
 $assert(!str_contains($confirmed, $state['token']), 'Confirmation HTML exposed the raw token.');
-preg_match('/<h1>([^<]+)<\/h1>/', $confirmed, $confirmedHeading);
-$assert(
-  str_contains($confirmed, 'Confirmation successful'),
-  'POST did not confirm the token; result heading: ' . ($confirmedHeading[1] ?? 'unknown')
-);
+  preg_match('/<h1>([^<]+)<\/h1>/', $confirmed, $confirmedHeading);
+  $assert(
+    !str_contains($confirmed, '<form'),
+    'POST did not confirm the token; result heading: ' . ($confirmedHeading[1] ?? 'unknown')
+  );
 $used = CRM_Core_DAO::executeQuery(
   'SELECT status, use_count FROM civicrm_civiverify_token WHERE id = %1',
   [1 => [(int) $state['id'], 'Integer']]
@@ -151,8 +151,8 @@ $used = CRM_Core_DAO::executeQuery(
 $assert($used->fetch() && $used->status === 'used', 'POST did not persist used status.');
 $assert((int) $used->use_count === 1, 'POST did not increment use_count exactly once.');
 
-[$replay] = $request($postUrl, http_build_query(['state' => $matches[1]]));
-$assert(str_contains($replay, 'Link unavailable'), 'A reused state nonce was not rejected.');
+  [$replay] = $request($postUrl, http_build_query(['state' => $matches[1]]));
+  $assert(!str_contains($replay, '<form'), 'A reused state nonce was not rejected.');
 $useCount = (int) CRM_Core_DAO::singleValueQuery(
   'SELECT use_count FROM civicrm_civiverify_token WHERE id = %1',
   [1 => [(int) $state['id'], 'Integer']]

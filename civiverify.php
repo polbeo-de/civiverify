@@ -19,6 +19,8 @@ use Civi\CiviVerify\IpHasher;
 use Civi\CiviVerify\RateLimiter;
 use Civi\CiviVerify\ConfirmationUrlBuilder;
 use Civi\CiviVerify\MailTokenSubscriber;
+use Civi\CiviVerify\OutboxDispatcher;
+use Civi\CiviVerify\OutboxRepository;
 use Civi\CiviVerify\CiviRules\EventSubscriber as CiviRulesEventSubscriber;
 use Civi\CiviVerify\CiviRules\Registrar as CiviRulesRegistrar;
 use Civi\CiviVerify\VerificationIssuer;
@@ -45,18 +47,27 @@ function civiverify_civicrm_container(ContainerBuilder $container): void {
   $container->register('civiverify.verify_draft_registry', VerifyDraftRegistry::class)
     ->setPublic(TRUE);
   $container->register('civiverify.repository', VerificationRepository::class);
+  $container->register('civiverify.outbox', OutboxRepository::class);
+  $container->register('civiverify.outbox_dispatcher', OutboxDispatcher::class)
+    ->setArguments([new Reference('civiverify.outbox')])
+    ->setPublic(TRUE);
   $container->register('civiverify.issuer', VerificationIssuer::class)
     ->setArguments([
       new Reference('civiverify.repository'),
+      new Reference('civiverify.outbox'),
       new Reference('civiverify.token_hasher'),
       new Reference('civiverify.ip_hasher'),
     ])
     ->setPublic(TRUE);
   $container->register('civiverify.verifier', VerificationVerifier::class)
-    ->setArguments([new Reference('civiverify.repository'), new Reference('civiverify.token_hasher')])
+    ->setArguments([
+      new Reference('civiverify.repository'),
+      new Reference('civiverify.outbox'),
+      new Reference('civiverify.token_hasher'),
+    ])
     ->setPublic(TRUE);
   $container->register('civiverify.manager', VerificationManager::class)
-    ->setArguments([new Reference('civiverify.repository')])
+    ->setArguments([new Reference('civiverify.repository'), new Reference('civiverify.outbox')])
     ->setPublic(TRUE);
   $container->register('civiverify.mailer', VerificationMailer::class)
     ->setArguments([
@@ -192,6 +203,16 @@ function civiverify_civicrm_navigationMenu(array &$menu): void {
           'permission' => 'administer verification tokens',
           'operator' => 'OR', 'separator' => 0, 'parentID' => $componentId,
           'navID' => $settingsId + 2, 'active' => 1,
+        ],
+      ],
+      $settingsId + 3 => [
+        'attributes' => [
+          'label' => CRM_CiviVerify_ExtensionUtil::ts('Event delivery queue'),
+          'name' => 'CiviVerifyOutbox',
+          'url' => 'civicrm/admin/civiverify/outbox?reset=1',
+          'permission' => 'administer verification tokens',
+          'operator' => 'OR', 'separator' => 0, 'parentID' => $componentId,
+          'navID' => $settingsId + 3, 'active' => 1,
         ],
       ],
     ],

@@ -39,6 +39,11 @@ final class CiviVerifyToken extends Generic\DAOEntity {
       ->setCheckPermissions($checkPermissions);
   }
 
+  public static function dispatchOutbox(bool $checkPermissions = TRUE): Action\CiviVerifyToken\DispatchOutbox {
+    return (new Action\CiviVerifyToken\DispatchOutbox(__CLASS__, __FUNCTION__))
+      ->setCheckPermissions($checkPermissions);
+  }
+
   /**
    * APIv4 permissions for standard entity operations.
    */
@@ -54,6 +59,7 @@ final class CiviVerifyToken extends Generic\DAOEntity {
       'inspect' => ['view verification tokens'],
       'revoke' => ['revoke verification tokens'],
       'cleanup' => ['administer verification tokens'],
+      'dispatchOutbox' => ['administer verification tokens'],
     ];
   }
 

@@ -44,6 +44,25 @@ try {
   $assert(str_contains($issued['confirmation_url'], '/civicrm/verify?token='), 'Confirmation URL is invalid.');
   $assert($issued['status'] === 'pending', 'Issued token is not pending.');
 
+  $outboxCount = static function (int $tokenId): int {
+    return (int) CRM_Core_DAO::singleValueQuery(
+      'SELECT COUNT(*) FROM civicrm_civiverify_outbox WHERE token_id = %1',
+      [1 => [$tokenId, 'Integer']]
+    );
+  };
+  $assert($outboxCount((int) $issued['id']) === 1, 'Issuing a token did not enqueue an event.');
+  $outbox = CRM_Core_DAO::executeQuery(
+    'SELECT event_name, payload FROM civicrm_civiverify_outbox WHERE token_id = %1 ORDER BY id LIMIT 1',
+    [1 => [(int) $issued['id'], 'Integer']]
+  );
+  $assert($outbox->fetch(), 'Issued outbox event was not persisted.');
+  $payload = json_decode((string) $outbox->payload, TRUE, 32, JSON_THROW_ON_ERROR);
+  $assert($outbox->event_name === 'civiverify.token.issued', 'Issued outbox event has the wrong name.');
+  $assert(
+    !isset($payload['token_hash'], $payload['created_ip_hash'], $payload['used_ip_hash']),
+    'Outbox payload contains sensitive data.'
+  );
+
   $dao = CRM_Core_DAO::executeQuery(
     'SELECT token_hash, status, use_count, metadata FROM civicrm_civiverify_token WHERE id = %1',
     [1 => [(int) $issued['id'], 'Integer']]
@@ -60,6 +79,7 @@ try {
 
   $verified = $api('verify', ['token' => $issued['token']])[0];
   $assert($verified['result'] === 'verified', 'First verification did not succeed.');
+  $assert($outboxCount((int) $issued['id']) === 2, 'Verification did not enqueue an event.');
   $repeated = $api('verify', ['token' => $issued['token']])[0];
   $assert($repeated['result'] === 'already_used', 'Repeated verification was not rejected.');
   $useCount = (int) CRM_Core_DAO::singleValueQuery(
@@ -78,6 +98,7 @@ try {
   $tokenIds[] = (int) $revocable['id'];
   $revoked = $api('revoke', ['id' => (int) $revocable['id'], 'reason' => 'integration test'])[0];
   $assert($revoked['status'] === 'revoked', 'Revocation did not succeed.');
+  $assert($outboxCount((int) $revocable['id']) === 2, 'Revocation did not enqueue an event.');
   $revokedResult = $api('verify', ['token' => $revocable['token']])[0]['result'];
   $assert($revokedResult === 'revoked', 'Revoked token was not rejected.');
 
@@ -100,6 +121,15 @@ try {
     [1 => [(int) $expirable['id'], 'Integer']]
   );
   $assert($expiredStatus === 'expired', 'Cleanup did not set expired status.');
+  $assert($outboxCount((int) $expirable['id']) === 2, 'Expiration did not enqueue an event.');
+
+  $dispatch = $api('dispatchOutbox', ['batchSize' => 50])[0];
+  $assert($dispatch['failed'] === 0, 'Outbox dispatch failed.');
+  $outboxIds = implode(',', array_map('intval', $tokenIds));
+  $undelivered = (int) CRM_Core_DAO::singleValueQuery(
+    'SELECT COUNT(*) FROM civicrm_civiverify_outbox WHERE delivered_date IS NULL AND token_id IN (' . $outboxIds . ')'
+  );
+  $assert($undelivered === 0, 'Outbox events were not marked delivered.');
 
   try {
     $api('issue', ['purpose' => 'integration.unbound', 'ttl' => 600]);
@@ -122,6 +152,7 @@ try {
 finally {
   if ($tokenIds !== []) {
     $ids = implode(',', array_map('intval', $tokenIds));
+    CRM_Core_DAO::executeQuery('DELETE FROM civicrm_civiverify_outbox WHERE token_id IN (' . $ids . ')');
     CRM_Core_DAO::executeQuery('DELETE FROM civicrm_civiverify_token WHERE id IN (' . $ids . ')');
   }
   if ($contactId !== NULL) {
