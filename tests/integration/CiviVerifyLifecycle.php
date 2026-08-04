@@ -131,6 +131,25 @@ try {
   );
   $assert($undelivered === 0, 'Outbox events were not marked delivered.');
 
+  $api3Issued = $api('issue', [
+    'purpose' => 'integration.api3_dispatch',
+    'contactId' => $contactId,
+    'ttl' => 600,
+  ])[0];
+  $tokenIds[] = (int) $api3Issued['id'];
+  $api3Verified = $api('verify', ['token' => $api3Issued['token']])[0];
+  $assert($api3Verified['result'] === 'verified', 'API3 bridge test token was not verified.');
+  $api3Dispatch = civicrm_api3('CiviVerifyToken', 'dispatchoutbox', [
+    'check_permissions' => FALSE,
+    'batch_size' => 50,
+  ]);
+  $assert((int) $api3Dispatch['is_error'] === 0, 'API3 outbox bridge failed.');
+  $api3Undelivered = (int) CRM_Core_DAO::singleValueQuery(
+    'SELECT COUNT(*) FROM civicrm_civiverify_outbox WHERE delivered_date IS NULL AND token_id = %1',
+    [1 => [(int) $api3Issued['id'], 'Integer']]
+  );
+  $assert($api3Undelivered === 0, 'API3 bridge did not mark outbox events delivered.');
+
   try {
     $api('issue', ['purpose' => 'integration.unbound', 'ttl' => 600]);
     throw new RuntimeException('Unbound issue unexpectedly succeeded.');

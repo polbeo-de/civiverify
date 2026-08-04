@@ -16,6 +16,21 @@ final class CRM_CiviVerify_Upgrader extends CRM_Extension_Upgrader_Base {
     return TRUE;
   }
 
+  /** Point existing managed delivery jobs at the API3 bridge. */
+  public function upgrade_1002(): bool {
+    CRM_Core_DAO::executeQuery(
+      'UPDATE civicrm_job
+       SET api_action = %1
+       WHERE api_entity = %2 AND LOWER(api_action) = %3',
+      [
+        1 => ['dispatchoutbox', 'String'],
+        2 => ['CiviVerifyToken', 'String'],
+        3 => ['dispatchoutbox', 'String'],
+      ]
+    );
+    return TRUE;
+  }
+
   private function ensureOutboxTable(): void {
     $helper = $GLOBALS['CiviMixSchema']->getHelper(CRM_CiviVerify_ExtensionUtil::LONG_NAME);
     if (!$helper->tableExists('civicrm_civiverify_outbox')) {
