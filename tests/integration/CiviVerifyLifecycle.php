@@ -24,6 +24,17 @@ $api = static function (string $action, array $params = []): array {
   return civicrm_api4('CiviVerifyToken', $action, ['checkPermissions' => FALSE] + $params)->getArrayCopy();
 };
 
+$managedJobId = static function (string $action): int {
+  $job = CRM_Core_DAO::executeQuery(
+    'SELECT id, is_active FROM civicrm_job WHERE api_entity = %1 AND api_action = %2 ORDER BY id LIMIT 1',
+    [1 => ['CiviVerifyToken', 'String'], 2 => [$action, 'String']]
+  );
+  if (!$job->fetch()) {
+    throw new RuntimeException('Expected managed job is missing.');
+  }
+  return (int) $job->id;
+};
+
 try {
   $contact = \Civi\Api4\Contact::create(FALSE)
     ->addValue('contact_type', 'Individual')
@@ -149,6 +160,59 @@ try {
     [1 => [(int) $api3Issued['id'], 'Integer']]
   );
   $assert($api3Undelivered === 0, 'API3 bridge did not mark outbox events delivered.');
+
+  $api3Expirable = $api('issue', [
+    'purpose' => 'integration.api3_cleanup',
+    'contactId' => $contactId,
+    'ttl' => 600,
+  ])[0];
+  $tokenIds[] = (int) $api3Expirable['id'];
+  CRM_Core_DAO::executeQuery(
+    'UPDATE civicrm_civiverify_token SET expires_date = DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 MINUTE) WHERE id = %1',
+    [1 => [(int) $api3Expirable['id'], 'Integer']]
+  );
+  $api3Cleanup = civicrm_api3('CiviVerifyToken', 'cleanup', [
+    'check_permissions' => FALSE,
+    'batch_size' => 50,
+    'retention_days' => 0,
+  ]);
+  $assert((int) $api3Cleanup['is_error'] === 0, 'API3 cleanup bridge failed.');
+  $api3ExpiredStatus = CRM_Core_DAO::singleValueQuery(
+    'SELECT status FROM civicrm_civiverify_token WHERE id = %1',
+    [1 => [(int) $api3Expirable['id'], 'Integer']]
+  );
+  $assert($api3ExpiredStatus === 'expired', 'API3 cleanup bridge did not persist expiration.');
+
+  $jobDispatchIssued = $api('issue', [
+    'purpose' => 'integration.job_dispatch',
+    'contactId' => $contactId,
+    'ttl' => 600,
+  ])[0];
+  $tokenIds[] = (int) $jobDispatchIssued['id'];
+  $api('verify', ['token' => $jobDispatchIssued['token']]);
+  (new CRM_Core_JobManager())->executeJobById($managedJobId('dispatchoutbox'));
+  $jobDispatchUndelivered = (int) CRM_Core_DAO::singleValueQuery(
+    'SELECT COUNT(*) FROM civicrm_civiverify_outbox WHERE delivered_date IS NULL AND token_id = %1',
+    [1 => [(int) $jobDispatchIssued['id'], 'Integer']]
+  );
+  $assert($jobDispatchUndelivered === 0, 'Managed outbox job did not deliver events.');
+
+  $jobCleanupIssued = $api('issue', [
+    'purpose' => 'integration.job_cleanup',
+    'contactId' => $contactId,
+    'ttl' => 600,
+  ])[0];
+  $tokenIds[] = (int) $jobCleanupIssued['id'];
+  CRM_Core_DAO::executeQuery(
+    'UPDATE civicrm_civiverify_token SET expires_date = DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 MINUTE) WHERE id = %1',
+    [1 => [(int) $jobCleanupIssued['id'], 'Integer']]
+  );
+  (new CRM_Core_JobManager())->executeJobById($managedJobId('cleanup'));
+  $jobCleanupStatus = CRM_Core_DAO::singleValueQuery(
+    'SELECT status FROM civicrm_civiverify_token WHERE id = %1',
+    [1 => [(int) $jobCleanupIssued['id'], 'Integer']]
+  );
+  $assert($jobCleanupStatus === 'expired', 'Managed cleanup job did not persist expiration.');
 
   try {
     $api('issue', ['purpose' => 'integration.unbound', 'ttl' => 600]);

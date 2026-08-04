@@ -6,6 +6,13 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.0-beta.6 - 2026-08-04
+
+- Add the API3 bridge required by the managed verification-token cleanup job.
+  It uses the shared cleanup manager, preserves `retention_days=0` as the
+  configured default, and returns a safe scheduled-job error on failure.
+- Test both API3 bridges and both managed CiviCRM jobs through `Job.execute`.
+
 ## 0.1.0-beta.5 - 2026-08-04
 
 - Correct the release-archive installation examples so their archive name and
