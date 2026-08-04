@@ -184,7 +184,7 @@ No secret is stored in this repository. Token and IP HMAC keys are independently
 
 ## Cleanup and scheduled jobs
 
-CiviVerify installs two active scheduled jobs. **CiviVerify: Clean up verification tokens** first runs at 02:42 local server time and then runs daily. **CiviVerify: Deliver verification events** uses CiviCRM's `Always` frequency and must therefore be invoked by the CiviCRM job runner every minute; its API3 bridge dispatches a batch of queued lifecycle events through the same service as `CiviVerifyToken.dispatchOutbox` in APIv4. Administrators may freely change either schedule or deactivate a job under **Administration → System → Scheduled Jobs**.
+CiviVerify installs two active scheduled jobs. **CiviVerify: Clean up verification tokens** first runs at 02:42 local server time and then runs daily; its API3 bridge uses the same cleanup service as `CiviVerifyToken.cleanup` in APIv4. **CiviVerify: Deliver verification events** uses CiviCRM's `Always` frequency and must therefore be invoked by the CiviCRM job runner every minute; its API3 bridge dispatches a batch of queued lifecycle events through the same service as `CiviVerifyToken.dispatchOutbox` in APIv4. Administrators may freely change either schedule or deactivate a job under **Administration → System → Scheduled Jobs**.
 
 Under **Administration → CiviVerify → Event delivery queue**, administrators can inspect the last 100 deliveries with their status, attempts, scheduled delivery time, and the most recent error. Payloads are intentionally not displayed.
 

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: de.polbeo.civicrm.civiverify 0.1.0-beta.5\n"
+"Project-Id-Version: de.polbeo.civicrm.civiverify 0.1.0-beta.6\n"
 "Report-Msgid-Bugs-To: https://github.com/polbeo-de/civiverify/issues\n"
 "POT-Creation-Date: 2026-07-27 00:00+0200\n"
 "PO-Revision-Date: 2026-08-04 00:00+0200\n"
@@ -17,6 +17,15 @@ msgstr "Outbox-Stapelgröße"
 
 msgid "CiviVerify outbox delivery failed."
 msgstr "Die Zustellung der CiviVerify-Outbox ist fehlgeschlagen."
+
+msgid "Cleanup batch size"
+msgstr "Bereinigungs-Stapelgröße"
+
+msgid "Retention period in days"
+msgstr "Aufbewahrungsdauer in Tagen"
+
+msgid "CiviVerify token cleanup failed."
+msgstr "Die Bereinigung der CiviVerify-Token ist fehlgeschlagen."
 
 msgid "Administer verification tokens"
 msgstr "Verifizierungstoken verwalten"
