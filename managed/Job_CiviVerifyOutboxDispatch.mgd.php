@@ -18,7 +18,7 @@ return [[
     'run_frequency' => 'Always',
     'scheduled_run_date' => gmdate('Y-m-d H:i:s'),
     'api_entity' => 'CiviVerifyToken',
-    'api_action' => 'dispatchOutbox',
+    'api_action' => 'dispatchoutbox',
     'parameters' => 'batch_size=50',
     'is_active' => TRUE,
   ],

@@ -6,6 +6,13 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.0-beta.4 - 2026-08-04
+
+- Add an API3 bridge for the verification-event dispatcher so the managed
+  CiviCRM job delivers committed outbox events through the shared dispatcher.
+- Migrate existing managed delivery jobs to the canonical API3 action while
+  retaining the APIv4 `CiviVerifyToken.dispatchOutbox` action.
+
 ## 0.1.0-beta.3 - 2026-08-03
 
 - Correct the public README status from alpha to beta.
