@@ -47,22 +47,25 @@ git clone https://github.com/polbeo-de/civiverify.git civiverify
 ### Download a release archive
 
 Use a tagged release archive for production installations. For example, with
-`curl` or `wget`:
+`curl` or `wget`. Set `VERSION` to the release being installed; the archive
+name and release URL must use the same value.
 
 ```bash
 cd /path/to/civicrm/extensions
-curl -fL -o civiverify-0.1.0-beta.2.zip \
-  https://github.com/polbeo-de/civiverify/releases/download/v0.1.0-beta.2/civiverify-0.1.0-beta.2.zip
-unzip civiverify-0.1.0-beta.2.zip
-rm civiverify-0.1.0-beta.2.zip
+VERSION=0.1.0-beta.5
+curl -fL -o "civiverify-${VERSION}.zip" \
+  "https://github.com/polbeo-de/civiverify/releases/download/v${VERSION}/civiverify-${VERSION}.zip"
+unzip "civiverify-${VERSION}.zip"
+rm "civiverify-${VERSION}.zip"
 ```
 
 ```bash
 cd /path/to/civicrm/extensions
-wget -O civiverify-0.1.0-beta.2.zip \
-  https://github.com/polbeo-de/civiverify/releases/download/v0.1.0-beta.2/civiverify-0.1.0-beta.2.zip
-unzip civiverify-0.1.0-beta.2.zip
-rm civiverify-0.1.0-beta.2.zip
+VERSION=0.1.0-beta.5
+wget -O "civiverify-${VERSION}.zip" \
+  "https://github.com/polbeo-de/civiverify/releases/download/v${VERSION}/civiverify-${VERSION}.zip"
+unzip "civiverify-${VERSION}.zip"
+rm "civiverify-${VERSION}.zip"
 ```
 
 You may also download the ZIP manually and unpack it in the extensions

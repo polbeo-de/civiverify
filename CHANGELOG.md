@@ -6,6 +6,11 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.0-beta.5 - 2026-08-04
+
+- Correct the release-archive installation examples so their archive name and
+  GitHub download URL share one explicit current version variable.
+
 ## 0.1.0-beta.4 - 2026-08-04
 
 - Add an API3 bridge for the verification-event dispatcher so the managed
