@@ -8,7 +8,7 @@ Release history is maintained in [CHANGELOG.md](CHANGELOG.md).
 
 ## Status and support
 
-CiviVerify is currently a beta extension. For support, maintenance, or
+CiviVerify is currently a stable extension. For support, maintenance, or
 coordination, contact [mcc+civiverify@polbeo.de](mailto:mcc+civiverify@polbeo.de).
 For security-sensitive reports, follow [SECURITY.md](SECURITY.md).
 
@@ -52,18 +52,18 @@ name and release URL must use the same value.
 
 ```bash
 cd /path/to/civicrm/extensions
-VERSION=0.1.0-beta.5
+VERSION=0.1.0
 curl -fL -o "civiverify-${VERSION}.zip" \
-  "https://github.com/polbeo-de/civiverify/releases/download/v${VERSION}/civiverify-${VERSION}.zip"
+  "https://github.com/polbeo-de/civiverify/releases/download/${VERSION}/civiverify-${VERSION}.zip"
 unzip "civiverify-${VERSION}.zip"
 rm "civiverify-${VERSION}.zip"
 ```
 
 ```bash
 cd /path/to/civicrm/extensions
-VERSION=0.1.0-beta.5
+VERSION=0.1.0
 wget -O "civiverify-${VERSION}.zip" \
-  "https://github.com/polbeo-de/civiverify/releases/download/v${VERSION}/civiverify-${VERSION}.zip"
+  "https://github.com/polbeo-de/civiverify/releases/download/${VERSION}/civiverify-${VERSION}.zip"
 unzip "civiverify-${VERSION}.zip"
 rm "civiverify-${VERSION}.zip"
 ```

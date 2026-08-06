@@ -8,8 +8,15 @@
     <author>polbeo</author>
     <email>mcc+civiverify@polbeo.de</email>
   </maintainer>
-  <version>0.1.0-beta.6</version>
-  <develStage>beta</develStage>
+  <urls>
+    <url desc="Source code">https://github.com/polbeo-de/civiverify</url>
+    <url desc="Documentation">https://github.com/polbeo-de/civiverify#readme</url>
+    <url desc="Support">https://github.com/polbeo-de/civiverify/issues</url>
+    <url desc="License">https://www.gnu.org/licenses/agpl-3.0.html</url>
+  </urls>
+  <releaseDate>2026-08-06</releaseDate>
+  <version>0.1.0</version>
+  <develStage>stable</develStage>
   <compatibility>
     <ver>6.15</ver>
   </compatibility>
