@@ -6,6 +6,12 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.0 - 2026-08-06
+
+- Publish the first stable CiviVerify release for the CiviCRM Extensions
+  Directory, with a stable manifest, release date, project URLs, and a
+  matching `0.1.0` Git tag.
+
 ## 0.1.0-beta.6 - 2026-08-04
 
 - Add the API3 bridge required by the managed verification-token cleanup job.
