@@ -6,6 +6,12 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.1 - 2026-09-08
+
+- Allow ordinary CiviCRM users to read CiviVerify Outbox API metadata so that
+  SearchKit administration can load without an authorization error. Outbox
+  records remain restricted to verification-token administrators.
+
 ## 0.1.0 - 2026-08-06
 
 - Publish the first stable CiviVerify release for the CiviCRM Extensions

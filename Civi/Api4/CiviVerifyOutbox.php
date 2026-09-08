@@ -9,7 +9,10 @@ final class CiviVerifyOutbox extends Generic\DAOEntity {
 
   public static function permissions(): array {
     return [
-      'meta' => ['administer verification tokens'],
+      // SearchKit loads API action metadata for every entity visible in its
+      // administration UI. Metadata must therefore be available to ordinary
+      // CiviCRM users, while all actual outbox record operations stay admin-only.
+      'meta' => ['access CiviCRM'],
       'default' => ['administer verification tokens'],
     ];
   }
