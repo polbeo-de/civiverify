@@ -44,10 +44,14 @@ final class VerificationMailer {
       'allow_unbound' => FALSE,
     ]);
     $confirmationUrl = $this->urlBuilder->build($issued['token'], $draft['target']);
+    $expiresDate = $this->formatExpiresDate(
+      (string) $issued['expires_date'],
+      $recipient['preferred_language']
+    );
     $context = [
       'contactId' => $contactId,
       'civiverifyConfirmationUrl' => $confirmationUrl,
-      'civiverifyExpiresDate' => (string) $issued['expires_date'],
+      'civiverifyExpiresDate' => $expiresDate,
       'civiverifyPurpose' => (string) $issued['purpose'],
       'civiverifyUuid' => (string) $issued['uuid'],
       'civiverifyEntityName' => (string) ($issued['entity_name'] ?? ''),
@@ -55,7 +59,7 @@ final class VerificationMailer {
     ];
     $templateParams = array_merge($templateParams, [
       'civiverifyConfirmationUrl' => $confirmationUrl,
-      'civiverifyExpiresDate' => (string) $issued['expires_date'],
+      'civiverifyExpiresDate' => $expiresDate,
       'civiverifyPurpose' => (string) $issued['purpose'],
       'civiverifyUuid' => (string) $issued['uuid'],
       'civiverifyEntityName' => (string) ($issued['entity_name'] ?? ''),
@@ -97,6 +101,30 @@ final class VerificationMailer {
       'workflow_name' => $template['workflow_name'],
       'email_id' => (int) $recipient['email_id'],
     ];
+  }
+
+  /** Format the expiry timestamp for the recipient-facing mail tokens. */
+  private function formatExpiresDate(string $value, ?string $language): string {
+    if (!preg_match('/^de(?:_|$)/i', (string) $language) || !class_exists(\IntlDateFormatter::class)) {
+      return $value;
+    }
+    $date = \DateTimeImmutable::createFromFormat(
+      '!Y-m-d H:i:s',
+      $value,
+      new \DateTimeZone('UTC')
+    );
+    if (!$date) {
+      return $value;
+    }
+    $formatter = new \IntlDateFormatter(
+      'de_DE',
+      \IntlDateFormatter::NONE,
+      \IntlDateFormatter::NONE,
+      'UTC',
+      \IntlDateFormatter::GREGORIAN,
+      "d. MMMM y, HH:mm 'Uhr'"
+    );
+    return $formatter->format($date) ?: $value;
   }
 
   private function resolveRecipient(int $contactId, mixed $emailId): array {

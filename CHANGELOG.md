@@ -6,6 +6,9 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+- Format CiviVerify expiry timestamps in German emails as a localized date and
+  minute-precise time, without exposing seconds.
+
 ## 0.1.1 - 2026-09-08
 
 - Allow ordinary CiviCRM users to read CiviVerify Outbox API metadata so that
