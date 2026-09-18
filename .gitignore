@@ -6,6 +6,7 @@
 /composer.lock
 *.swp
 .DS_Store
+/AGENTS.md
 
 # Local operator documentation; it is not part of the public extension.
 docs/benutzerhandbuch.md
