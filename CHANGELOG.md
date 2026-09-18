@@ -6,6 +6,8 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.2 - 2026-09-18
+
 - Format CiviVerify expiry timestamps in German emails as a localized date and
   minute-precise time, without exposing seconds.
 
