@@ -28,6 +28,8 @@ use Civi\Api4\Generic\Result;
  * @method $this setEmailId(?int $emailId)
  * @method array|null getTemplateParams()
  * @method $this setTemplateParams(?array $templateParams)
+ * @method string|null getTargetKey()
+ * @method $this setTargetKey(?string $targetKey)
  */
 final class IssueAndSend extends AbstractAction {
 
@@ -45,6 +47,7 @@ final class IssueAndSend extends AbstractAction {
   protected ?int $messageTemplateId = NULL;
   protected ?int $emailId = NULL;
   protected ?array $templateParams = NULL;
+  protected ?string $targetKey = NULL;
 
   public function _run(Result $result): void {
     $result[] = \Civi::service('civiverify.mailer')->issueAndSend([
@@ -58,6 +61,7 @@ final class IssueAndSend extends AbstractAction {
       'message_template_id' => $this->messageTemplateId,
       'email_id' => $this->emailId,
       'template_params' => $this->templateParams,
+      'target_key' => $this->targetKey,
     ]);
   }
 

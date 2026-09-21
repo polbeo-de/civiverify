@@ -33,6 +33,8 @@ final class VerificationMailer {
     );
     $templateParams = $this->validateTemplateParams($input['template_params'] ?? []);
     $draft = $this->draftRegistry->draft((string) $template['workflow_name']);
+    $targetKey = trim((string) ($input['target_key'] ?? ''));
+    $target = $targetKey === '' ? $draft['target'] : $this->draftRegistry->target($targetKey);
 
     $issued = $this->issuer->issue([
       'purpose' => $input['purpose'] ?? '',
@@ -43,7 +45,7 @@ final class VerificationMailer {
       'metadata' => $input['metadata'] ?? NULL,
       'allow_unbound' => FALSE,
     ]);
-    $confirmationUrl = $this->urlBuilder->build($issued['token'], $draft['target']);
+    $confirmationUrl = $this->urlBuilder->build($issued['token'], $target);
     $expiresDate = $this->formatExpiresDate(
       (string) $issued['expires_date'],
       $recipient['preferred_language']

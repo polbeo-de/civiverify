@@ -6,6 +6,11 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.3 - 2026-09-21
+
+- Allow callers of `CiviVerifyToken.issueAndSend` to select an existing
+  configured confirmation target by key without accepting a route URL.
+
 ## 0.1.2 - 2026-09-18
 
 - Format CiviVerify expiry timestamps in German emails as a localized date and

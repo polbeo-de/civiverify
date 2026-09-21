@@ -134,6 +134,7 @@ $sent = \Civi\Api4\CiviVerifyToken::issueAndSend(FALSE)
   ->setEntityId(4711)
   ->setTtl(86400)
   ->setWorkflowName('civiverify_confirmation')
+  ->setTargetKey('website_test') // Optional: an existing configured target key.
   ->setTemplateParams(['productLabel' => 'Managed CiviCRM'])
   ->execute()
   ->single();
@@ -141,7 +142,7 @@ $sent = \Civi\Api4\CiviVerifyToken::issueAndSend(FALSE)
 // $sent contains delivery and verification metadata, but no raw token or URL.
 ```
 
-`issueAndSend` uses the contact's primary email address unless `emailId` selects another address belonging to the same contact. It deliberately has no arbitrary recipient parameter. Select either a stable `workflowName` or a concrete `messageTemplateId`, never both. If mail delivery fails, the newly issued verification is immediately revoked. Use `issue` instead when an external system owns delivery.
+`issueAndSend` uses the contact's primary email address unless `emailId` selects another address belonging to the same contact. It deliberately has no arbitrary recipient parameter. Select either a stable `workflowName` or a concrete `messageTemplateId`, never both. `targetKey` is optional: without it, the selected workflow's configured target is used; with it, the key must name an existing trusted confirmation target maintained under **Administration → CiviVerify**. Callers can never provide a route or URL themselves. If mail delivery fails, the newly issued verification is immediately revoked. Use `issue` instead when an external system owns delivery.
 
 Administrative actions:
 
