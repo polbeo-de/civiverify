@@ -14,6 +14,7 @@ $emailId = NULL;
 $tokenIds = [];
 $templateIds = [];
 $mailLog = sys_get_temp_dir() . '/civiverify-mail-' . getmypid() . '.log';
+$previousTargets = \Civi::settings()->get('civiverify_confirmation_targets');
 
 if (!defined('CIVICRM_MAIL_LOG')) {
   define('CIVICRM_MAIL_LOG', $mailLog);
@@ -111,6 +112,28 @@ try {
     'Additional template parameters were not rendered.'
   );
 
+  \Civi::settings()->set('civiverify_confirmation_targets', [
+    ['key' => 'civicrm', 'label' => 'CiviCRM', 'route' => 'civicrm/verify'],
+    [
+      'key' => 'integration_target',
+      'label' => 'Integration target',
+      'route' => 'https://verification.example.invalid/confirm',
+    ],
+  ]);
+  $targetSent = civicrm_api4('CiviVerifyToken', 'issueAndSend', [
+    'checkPermissions' => FALSE,
+    'purpose' => 'integration.target_key',
+    'contactId' => $contactId,
+    'targetKey' => 'integration_target',
+  ])->single();
+  $tokenIds[] = (int) $targetSent['id'];
+  $targetMail = file_get_contents($mailLog);
+  $assert(
+    is_string($targetMail)
+      && preg_match('~https://verification\.example\.invalid/confirm\?token=[A-Za-z0-9_-]{43}~', $targetMail) === 1,
+    'The selected confirmation target was not used.'
+  );
+
   $invalidTemplate = \Civi\Api4\MessageTemplate::create(FALSE)
     ->addValue('msg_title', 'CiviVerify integration invalid template')
     ->addValue('msg_subject', 'Missing confirmation URL')
@@ -142,6 +165,7 @@ try {
   printf("PASS: CiviVerify issueAndSend integration test (%d assertions)\n", $assertions);
 }
 finally {
+  \Civi::settings()->set('civiverify_confirmation_targets', $previousTargets);
   if ($templateIds !== []) {
     \Civi\Api4\MessageTemplate::delete(FALSE)->addWhere('id', 'IN', $templateIds)->execute();
   }
