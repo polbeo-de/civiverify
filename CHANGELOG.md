@@ -6,6 +6,8 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.4 - 2026-09-24
+
 - Add a six-digit, one-time verification code alongside each clickable link.
   Codes are keyed by the issued UUID, stored only as a separately derived HMAC,
   and verify through the same lifecycle as the link.
