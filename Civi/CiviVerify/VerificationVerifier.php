@@ -92,7 +92,17 @@ final class VerificationVerifier {
       $tx->rollback();
       throw $e;
     }
-    $record = $this->repository->findByUuidAndCodeHash($uuid, $hash);
+    $record = $this->repository->recordCodeFailure(
+      $uuid,
+      $now,
+      5,
+      fn(array $record) => $this->outbox->enqueue(
+        (int) $record['id'],
+        TokenEvent::REVOKED,
+        $record,
+        $now
+      )
+    );
     if ($record === NULL) {
       return new VerificationResult('invalid');
     }

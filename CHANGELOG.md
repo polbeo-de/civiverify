@@ -6,6 +6,11 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.5 - 2026-09-24
+
+- Limit failed six-digit code attempts to five. The whole verification is then
+  revoked and emits its normal revocation event.
+
 ## 0.1.4 - 2026-09-24
 
 - Add a six-digit, one-time verification code alongside each clickable link.

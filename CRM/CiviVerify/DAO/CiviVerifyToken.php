@@ -25,6 +25,7 @@ declare(strict_types=1);
  * @property string|null $metadata
  * @property string|null $result_metadata
  * @property string $use_count
+ * @property string $code_attempt_count
  */
 final class CRM_CiviVerify_DAO_CiviVerifyToken extends CRM_Core_DAO_Base {
 
