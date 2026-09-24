@@ -92,7 +92,7 @@ final class VerificationVerifier {
       $tx->rollback();
       throw $e;
     }
-    $record = $this->repository->findByUuidAndCodeHash($uuid, $hash);
+    $record = $this->repository->recordCodeFailure($uuid, $now, 5);
     if ($record === NULL) {
       return new VerificationResult('invalid');
     }

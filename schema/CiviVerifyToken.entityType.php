@@ -108,5 +108,9 @@ return [
       'title' => E::ts('Use Count'), 'sql_type' => 'int unsigned', 'input_type' => 'Number',
       'required' => TRUE, 'default' => 0, 'add' => '0.1.0',
     ],
+    'code_attempt_count' => [
+      'title' => E::ts('Code attempt count'), 'sql_type' => 'int unsigned', 'input_type' => NULL,
+      'required' => TRUE, 'default' => 0, 'add' => '0.1.5',
+    ],
   ],
 ];

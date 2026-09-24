@@ -44,6 +44,14 @@ final class CRM_CiviVerify_Upgrader extends CRM_Extension_Upgrader_Base {
     return TRUE;
   }
 
+  public function upgrade_1005(): bool {
+    $column = CRM_Core_DAO::singleValueQuery("SHOW COLUMNS FROM civicrm_civiverify_token LIKE 'code_attempt_count'");
+    if ($column === NULL) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_civiverify_token ADD COLUMN code_attempt_count INT UNSIGNED NOT NULL DEFAULT 0 AFTER use_count');
+    }
+    return TRUE;
+  }
+
   private function ensureOutboxTable(): void {
     $helper = $GLOBALS['CiviMixSchema']->getHelper(CRM_CiviVerify_ExtensionUtil::LONG_NAME);
     if (!$helper->tableExists('civicrm_civiverify_outbox')) {
