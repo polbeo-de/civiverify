@@ -118,6 +118,26 @@ try {
     'The verification code was not accepted.'
   );
 
+  $limitedCode = $api('issue', [
+    'purpose' => 'integration.code_attempt_limit',
+    'contactId' => $contactId,
+    'ttl' => 600,
+  ])[0];
+  $tokenIds[] = (int) $limitedCode['id'];
+  $wrongLimitedCode = str_pad(
+    (string) (((int) $limitedCode['code'] + 1) % 1000000),
+    6,
+    '0',
+    STR_PAD_LEFT
+  );
+  for ($attempt = 1; $attempt <= 5; $attempt++) {
+    $api('verifyCode', ['uuid' => $limitedCode['uuid'], 'code' => $wrongLimitedCode]);
+  }
+  $assert(
+    $api('verify', ['token' => $limitedCode['token']])[0]['result'] === 'revoked',
+    'Too many incorrect codes did not revoke the verification.'
+  );
+
   $revocable = $api('issue', [
     'purpose' => 'integration.revoke',
     'contactId' => $contactId,

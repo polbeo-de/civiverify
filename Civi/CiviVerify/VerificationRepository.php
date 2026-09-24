@@ -95,24 +95,45 @@ final class VerificationRepository {
   }
 
   /** Count a wrong code atomically and revoke its whole transaction at five tries. */
-  public function recordCodeFailure(string $uuid, string $now, int $limit): ?array {
+  public function recordCodeFailure(string $uuid, string $now, int $limit, callable $onRevoked): ?array {
     $tx = new \CRM_Core_Transaction();
     try {
       $dao = \CRM_Core_DAO::executeQuery(
-        'SELECT id, code_attempt_count FROM ' . self::TABLE . ' WHERE uuid = %1 AND status = %2 AND expires_date > %3 FOR UPDATE',
+        'SELECT id, code_attempt_count FROM ' . self::TABLE . '
+         WHERE uuid = %1 AND status = %2 AND expires_date > %3 FOR UPDATE',
         [1 => [$uuid, 'String'], 2 => ['pending', 'String'], 3 => [$now, 'String']]
       );
-      if (!$dao->fetch()) { $tx->commit(); return NULL; }
+      if (!$dao->fetch()) {
+        $tx->commit();
+        return NULL;
+      }
       $next = (int) $dao->code_attempt_count + 1;
       if ($next >= $limit) {
-        \CRM_Core_DAO::executeQuery('UPDATE ' . self::TABLE . ' SET code_attempt_count = %1, status = %2, revoked_date = %3 WHERE id = %4', [1 => [$next, 'Integer'], 2 => ['revoked', 'String'], 3 => [$now, 'String'], 4 => [(int) $dao->id, 'Integer']]);
+        \CRM_Core_DAO::executeQuery(
+          'UPDATE ' . self::TABLE . '
+           SET code_attempt_count = %1, status = %2, revoked_date = %3 WHERE id = %4',
+          [
+            1 => [$next, 'Integer'], 2 => ['revoked', 'String'], 3 => [$now, 'String'],
+            4 => [(int) $dao->id, 'Integer'],
+          ]
+        );
       } else {
-        \CRM_Core_DAO::executeQuery('UPDATE ' . self::TABLE . ' SET code_attempt_count = %1 WHERE id = %2', [1 => [$next, 'Integer'], 2 => [(int) $dao->id, 'Integer']]);
+        \CRM_Core_DAO::executeQuery(
+          'UPDATE ' . self::TABLE . ' SET code_attempt_count = %1 WHERE id = %2',
+          [1 => [$next, 'Integer'], 2 => [(int) $dao->id, 'Integer']]
+        );
       }
       $record = $this->findById((int) $dao->id);
+      if ($record !== NULL && $next >= $limit) {
+        $onRevoked($record);
+      }
       $tx->commit();
       return $record;
-    } catch (\Throwable $e) { $tx->rollback(); throw $e; }
+    }
+    catch (\Throwable $e) {
+      $tx->rollback();
+      throw $e;
+    }
   }
 
   public function revoke(int $id, string $revokedDate, ?string $resultMetadata): bool {
