@@ -14,8 +14,8 @@
     <url desc="Support">https://github.com/polbeo-de/civiverify/issues</url>
     <url desc="License">https://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
-  <releaseDate>2026-09-21</releaseDate>
-  <version>0.1.3</version>
+  <releaseDate>2026-09-24</releaseDate>
+  <version>0.1.4</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>6.15</ver>

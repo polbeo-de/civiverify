@@ -6,12 +6,14 @@ namespace Civi\CiviVerify;
 
 use Civi\Token\Event\TokenRegisterEvent;
 use Civi\Token\Event\TokenValueEvent;
+use CRM_CiviVerify_ExtensionUtil as E;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 final class MailTokenSubscriber implements EventSubscriberInterface {
 
   private const CONTEXT = [
     'confirmation_url' => 'civiverifyConfirmationUrl',
+    'confirmation_code' => 'civiverifyConfirmationCode',
     'expires_date' => 'civiverifyExpiresDate',
     'purpose' => 'civiverifyPurpose',
     'uuid' => 'civiverifyUuid',
@@ -32,7 +34,8 @@ final class MailTokenSubscriber implements EventSubscriberInterface {
       return;
     }
     $entity = $event->entity('civiverify');
-    $entity->register('confirmation_url', 'CiviVerify: Confirmation URL');
+    $entity->register('confirmation_url', E::ts('CiviVerify: Confirmation URL'));
+    $entity->register('confirmation_code', E::ts('CiviVerify: Confirmation code'));
     $entity->register('expires_date', 'CiviVerify: Expiration date');
     $entity->register('purpose', 'CiviVerify: Purpose');
     $entity->register('uuid', 'CiviVerify: UUID');

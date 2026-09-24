@@ -25,4 +25,12 @@ final class TokenHasherTest extends TestCase {
     self::assertStringNotContainsString($token, $first->hash($token));
   }
 
+  public function testGeneratedCodeIsSixDigitsAndUsesASeparateKey(): void {
+    $hasher = new TokenHasher(str_repeat('s', 32));
+    $code = $hasher->generateCode();
+    self::assertMatchesRegularExpression('/^[0-9]{6}$/', $code);
+    self::assertSame(64, strlen($hasher->hashCode($code)));
+    self::assertNotSame($hasher->hash($code), $hasher->hashCode($code));
+  }
+
 }

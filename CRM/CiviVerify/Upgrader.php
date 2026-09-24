@@ -31,6 +31,19 @@ final class CRM_CiviVerify_Upgrader extends CRM_Extension_Upgrader_Base {
     return TRUE;
   }
 
+  /** Add the non-reversible digest column for alternate verification codes. */
+  public function upgrade_1004(): bool {
+    $column = CRM_Core_DAO::singleValueQuery(
+      "SHOW COLUMNS FROM civicrm_civiverify_token LIKE 'code_hash'"
+    );
+    if ($column === NULL) {
+      CRM_Core_DAO::executeQuery(
+        'ALTER TABLE civicrm_civiverify_token ADD COLUMN code_hash CHAR(64) NULL AFTER token_hash'
+      );
+    }
+    return TRUE;
+  }
+
   private function ensureOutboxTable(): void {
     $helper = $GLOBALS['CiviMixSchema']->getHelper(CRM_CiviVerify_ExtensionUtil::LONG_NAME);
     if (!$helper->tableExists('civicrm_civiverify_outbox')) {

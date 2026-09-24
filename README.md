@@ -122,6 +122,7 @@ $issued = \Civi\Api4\CiviVerifyToken::issue(FALSE)
   ->single();
 
 // $issued['token'] and $issued['confirmation_url'] exist only in this response.
+// $issued['code'] is a six-digit alternate credential for $issued['uuid'].
 ```
 
 Issue a token and send it through CiviCRM's transactional message system:
@@ -143,6 +144,10 @@ $sent = \Civi\Api4\CiviVerifyToken::issueAndSend(FALSE)
 ```
 
 `issueAndSend` uses the contact's primary email address unless `emailId` selects another address belonging to the same contact. It deliberately has no arbitrary recipient parameter. Select either a stable `workflowName` or a concrete `messageTemplateId`, never both. `targetKey` is optional: without it, the selected workflow's configured target is used; with it, the key must name an existing trusted confirmation target maintained under **Administration → CiviVerify**. Callers can never provide a route or URL themselves. If mail delivery fails, the newly issued verification is immediately revoked. Use `issue` instead when an external system owns delivery.
+
+Every new verification has both the high-entropy link token and a six-digit one-time code. `issue` returns the code once alongside the public UUID; `issueAndSend` makes it available only to the message template as `{civiverify.confirmation_code}` or `{$civiverifyConfirmationCode}` and never returns it to the caller. A frontend which started the flow retains the UUID in its own short-lived session and calls `CiviVerifyToken.verifyCode` with that UUID and the entered six digits. The code is not stored in cleartext, expires and is revoked together with its link token, and consumes the same verification exactly once.
+
+The reserved built-in template includes the code. Existing editable templates are intentionally never overwritten; add the code token to those templates when the alternate entry flow is needed.
 
 Administrative actions:
 

@@ -348,6 +348,21 @@ msgstr "Entitäts-ID"
 msgid "Token Hash"
 msgstr "Token-Hash"
 
+msgid "Verification Code Hash"
+msgstr "Verifizierungscode-Hash"
+
+msgid "Keyed SHA-256 digest of the alternate verification code."
+msgstr "HMAC-SHA-256-Prüfwert des alternativen Verifizierungscodes."
+
+msgid "CiviVerify: Confirmation URL"
+msgstr "CiviVerify: Bestätigungs-URL"
+
+msgid "CiviVerify: Confirmation code"
+msgstr "CiviVerify: Bestätigungscode"
+
+msgid "Or enter this verification code:"
+msgstr "Oder diesen Verifizierungscode eingeben:"
+
 msgid "Keyed SHA-256 digest. Never expose through public APIs."
 msgstr "Schlüsselgebundener SHA-256-Hash. Niemals über öffentliche APIs ausgeben."
 

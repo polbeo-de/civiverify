@@ -12,6 +12,7 @@ declare(strict_types=1);
  * @property string|null $entity_id
  * @property string $purpose
  * @property string $token_hash
+ * @property string|null $code_hash
  * @property string $status
  * @property string $created_date
  * @property string $expires_date
