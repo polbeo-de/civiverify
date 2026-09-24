@@ -53,6 +53,7 @@ final class VerificationMailer {
     $context = [
       'contactId' => $contactId,
       'civiverifyConfirmationUrl' => $confirmationUrl,
+      'civiverifyConfirmationCode' => (string) $issued['code'],
       'civiverifyExpiresDate' => $expiresDate,
       'civiverifyPurpose' => (string) $issued['purpose'],
       'civiverifyUuid' => (string) $issued['uuid'],
@@ -61,6 +62,7 @@ final class VerificationMailer {
     ];
     $templateParams = array_merge($templateParams, [
       'civiverifyConfirmationUrl' => $confirmationUrl,
+      'civiverifyConfirmationCode' => (string) $issued['code'],
       'civiverifyExpiresDate' => $expiresDate,
       'civiverifyPurpose' => (string) $issued['purpose'],
       'civiverifyUuid' => (string) $issued['uuid'],
@@ -96,7 +98,7 @@ final class VerificationMailer {
       throw new \CRM_Core_Exception('Verification email could not be sent.', 0, [], $e);
     }
 
-    unset($issued['token']);
+    unset($issued['token'], $issued['code']);
     return $issued + [
       'mail_status' => 'sent',
       'message_template_id' => (int) $template['id'],

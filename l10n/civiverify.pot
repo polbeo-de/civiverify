@@ -336,6 +336,21 @@ msgstr ""
 msgid "Token Hash"
 msgstr ""
 
+msgid "Verification Code Hash"
+msgstr ""
+
+msgid "Keyed SHA-256 digest of the alternate verification code."
+msgstr ""
+
+msgid "CiviVerify: Confirmation URL"
+msgstr ""
+
+msgid "CiviVerify: Confirmation code"
+msgstr ""
+
+msgid "Or enter this verification code:"
+msgstr ""
+
 msgid "Keyed SHA-256 digest. Never expose through public APIs."
 msgstr ""
 

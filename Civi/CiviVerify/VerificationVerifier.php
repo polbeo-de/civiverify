@@ -68,6 +68,42 @@ final class VerificationVerifier {
     return new VerificationResult($result, $record);
   }
 
+  public function verifyCode(string $uuid, string $code, ?string $ipHash = NULL): VerificationResult {
+    if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $uuid)
+      || !preg_match('/^[0-9]{6}$/', $code)) {
+      return new VerificationResult('invalid');
+    }
+    $hash = $this->hasher->hashCode($code);
+    $now = gmdate('Y-m-d H:i:s');
+    $tx = new \CRM_Core_Transaction();
+    try {
+      if ($this->repository->consumeCode($uuid, $hash, $now, $ipHash)) {
+        $record = $this->repository->findByUuid($uuid);
+        if ($record === NULL) {
+          throw new \RuntimeException('Consumed verification record was not found.');
+        }
+        $this->outbox->enqueue((int) $record['id'], TokenEvent::VERIFIED, $record, $now);
+        $tx->commit();
+        return new VerificationResult('verified', $record);
+      }
+      $tx->commit();
+    }
+    catch (\Throwable $e) {
+      $tx->rollback();
+      throw $e;
+    }
+    $record = $this->repository->findByUuidAndCodeHash($uuid, $hash);
+    if ($record === NULL) {
+      return new VerificationResult('invalid');
+    }
+    return new VerificationResult(match ($record['status']) {
+      'used' => 'already_used',
+      'revoked' => 'revoked',
+      'expired' => 'expired',
+      default => $this->isExpired($record) ? 'expired' : 'invalid',
+    }, $record);
+  }
+
   private function isExpired(array $record): bool {
     $expires = \DateTimeImmutable::createFromFormat(
       '!Y-m-d H:i:s',

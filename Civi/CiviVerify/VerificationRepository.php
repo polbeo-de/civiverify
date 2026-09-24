@@ -18,6 +18,7 @@ final class VerificationRepository {
       [$values['entity_id'], 'Integer'],
       [$values['purpose'], 'String'],
       [$values['token_hash'], 'String'],
+      [$values['code_hash'], 'String'],
       ['pending', 'String'],
       [$values['created_date'], 'String'],
       [$values['expires_date'], 'String'],
@@ -29,7 +30,7 @@ final class VerificationRepository {
     }
     \CRM_Core_DAO::executeQuery(
       'INSERT INTO ' . self::TABLE . '
-       (uuid, contact_id, entity_name, entity_id, purpose, token_hash, status, created_date,
+       (uuid, contact_id, entity_name, entity_id, purpose, token_hash, code_hash, status, created_date,
         expires_date, created_by_contact_id, created_ip_hash, metadata, use_count)
        VALUES (' . implode(', ', $placeholders) . ', 0)',
       $params
@@ -49,6 +50,13 @@ final class VerificationRepository {
     return $this->find('token_hash = %1', [1 => [$hash, 'String']]);
   }
 
+  public function findByUuidAndCodeHash(string $uuid, string $hash): ?array {
+    return $this->find('uuid = %1 AND code_hash = %2', [
+      1 => [$uuid, 'String'],
+      2 => [$hash, 'String'],
+    ]);
+  }
+
   public function consume(string $hash, string $usedDate, ?string $ipHash = NULL): bool {
     $params = [
       1 => ['used', 'String'],
@@ -61,6 +69,25 @@ final class VerificationRepository {
       'UPDATE ' . self::TABLE . '
        SET status = %1, used_date = %2, used_ip_hash = ' . $ipPlaceholder . ', use_count = use_count + 1
        WHERE token_hash = ' . $hashPlaceholder . ' AND status = ' . $pendingPlaceholder . '
+         AND used_date IS NULL AND revoked_date IS NULL AND expires_date > %2',
+      $params
+    );
+    return $dao->affectedRows() === 1;
+  }
+
+  public function consumeCode(string $uuid, string $hash, string $usedDate, ?string $ipHash = NULL): bool {
+    $params = [
+      1 => ['used', 'String'],
+      2 => [$usedDate, 'String'],
+      3 => [$uuid, 'String'],
+      4 => [$hash, 'String'],
+      5 => ['pending', 'String'],
+    ];
+    $ipPlaceholder = $this->bindNullable($params, $ipHash, 'String');
+    $dao = \CRM_Core_DAO::executeQuery(
+      'UPDATE ' . self::TABLE . '
+       SET status = %1, used_date = %2, used_ip_hash = ' . $ipPlaceholder . ', use_count = use_count + 1
+       WHERE uuid = %3 AND code_hash = %4 AND status = %5
          AND used_date IS NULL AND revoked_date IS NULL AND expires_date > %2',
       $params
     );
@@ -138,7 +165,7 @@ final class VerificationRepository {
     foreach (['metadata', 'result_metadata'] as $field) {
       $row[$field] = empty($row[$field]) ? NULL : json_decode((string) $row[$field], TRUE, 32, JSON_THROW_ON_ERROR);
     }
-    unset($row['token_hash'], $row['created_ip_hash'], $row['used_ip_hash']);
+    unset($row['token_hash'], $row['code_hash'], $row['created_ip_hash'], $row['used_ip_hash']);
     return $row;
   }
 

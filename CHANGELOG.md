@@ -6,6 +6,10 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+- Add a six-digit, one-time verification code alongside each clickable link.
+  Codes are keyed by the issued UUID, stored only as a separately derived HMAC,
+  and verify through the same lifecycle as the link.
+
 ## 0.1.3 - 2026-09-21
 
 - Allow callers of `CiviVerifyToken.issueAndSend` to select an existing

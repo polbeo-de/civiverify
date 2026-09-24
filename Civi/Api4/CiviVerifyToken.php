@@ -24,6 +24,11 @@ final class CiviVerifyToken extends Generic\DAOEntity {
       ->setCheckPermissions($checkPermissions);
   }
 
+  public static function verifyCode(bool $checkPermissions = TRUE): Action\CiviVerifyToken\VerifyCode {
+    return (new Action\CiviVerifyToken\VerifyCode(__CLASS__, __FUNCTION__))
+      ->setCheckPermissions($checkPermissions);
+  }
+
   public static function inspect(bool $checkPermissions = TRUE): Action\CiviVerifyToken\Inspect {
     return (new Action\CiviVerifyToken\Inspect(__CLASS__, __FUNCTION__))
       ->setCheckPermissions($checkPermissions);
@@ -56,6 +61,7 @@ final class CiviVerifyToken extends Generic\DAOEntity {
       'issue' => ['issue verification tokens'],
       'issueAndSend' => ['issue verification tokens'],
       'verify' => ['administer verification tokens'],
+      'verifyCode' => ['administer verification tokens'],
       'inspect' => ['view verification tokens'],
       'revoke' => ['revoke verification tokens'],
       'cleanup' => ['administer verification tokens'],

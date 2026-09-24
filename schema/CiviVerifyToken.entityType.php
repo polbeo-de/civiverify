@@ -55,6 +55,12 @@ return [
       'description' => E::ts('Keyed SHA-256 digest. Never expose through public APIs.'),
       'permission' => [['administer verification tokens']], 'add' => '0.1.0',
     ],
+    'code_hash' => [
+      'title' => E::ts('Verification Code Hash'), 'sql_type' => 'char(64)', 'input_type' => NULL,
+      'readonly' => TRUE,
+      'description' => E::ts('Keyed SHA-256 digest of the alternate verification code.'),
+      'permission' => [['administer verification tokens']], 'add' => '0.1.4',
+    ],
     'status' => [
       'title' => E::ts('Status'), 'sql_type' => 'varchar(16)', 'input_type' => 'Select',
       'required' => TRUE, 'default' => 'pending', 'add' => '0.1.0',

@@ -7,6 +7,7 @@ namespace Civi\CiviVerify;
 final class TokenHasher {
 
   private string $key;
+  private string $codeKey;
 
   public function __construct(?string $siteKey = NULL) {
     $siteKey ??= defined('CIVICRM_SITE_KEY') ? (string) CIVICRM_SITE_KEY : '';
@@ -16,6 +17,7 @@ final class TokenHasher {
     // Keep this legacy context stable: existing pending links were hashed with
     // it before the extension key was corrected in 0.1.3.
     $this->key = hash_hkdf('sha256', $siteKey, 32, 'de.polbeo.civirm.civiverify/token-hmac');
+    $this->codeKey = hash_hkdf('sha256', $siteKey, 32, 'de.polbeo.civicrm.civiverify/code-hmac');
   }
 
   public function generate(): string {
@@ -24,6 +26,14 @@ final class TokenHasher {
 
   public function hash(string $token): string {
     return hash_hmac('sha256', $token, $this->key);
+  }
+
+  public function generateCode(): string {
+    return sprintf('%06d', random_int(0, 999999));
+  }
+
+  public function hashCode(string $code): string {
+    return hash_hmac('sha256', $code, $this->codeKey);
   }
 
 }

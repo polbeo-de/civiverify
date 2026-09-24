@@ -10,6 +10,7 @@ $html = <<<'HTML'
 <p>{ts}Hello{/ts} {contact.display_name},</p>
 <p>{ts}please confirm your request by selecting the following link:{/ts}</p>
 <p><a href="{civiverify.confirmation_url}">{ts}Confirm request{/ts}</a></p>
+<p>{ts}Or enter this verification code:{/ts} <strong>{civiverify.confirmation_code}</strong></p>
 <p>{ts}This link is valid until{/ts} {civiverify.expires_date}.</p>
 <p>{ts}If you did not request this confirmation, you can ignore this message.{/ts}</p>
 {site.message_footer}

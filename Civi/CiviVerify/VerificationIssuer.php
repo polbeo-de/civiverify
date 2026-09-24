@@ -20,6 +20,7 @@ final class VerificationIssuer {
     $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
     $ttl = (int) ($input['ttl'] ?? \Civi::settings()->get('civiverify_default_ttl'));
     $rawToken = $this->hasher->generate();
+    $code = $this->hasher->generateCode();
     $values = [
       'uuid' => Uuid::v4(),
       'contact_id' => $input['contact_id'] ?? NULL,
@@ -27,6 +28,7 @@ final class VerificationIssuer {
       'entity_id' => $input['entity_id'] ?? NULL,
       'purpose' => $input['purpose'],
       'token_hash' => $this->hasher->hash($rawToken),
+      'code_hash' => $this->hasher->hashCode($code),
       'created_date' => $now->format('Y-m-d H:i:s'),
       'expires_date' => $now->modify('+' . $ttl . ' seconds')->format('Y-m-d H:i:s'),
       'created_by_contact_id' => \CRM_Core_Session::getLoggedInContactID() ?: NULL,
@@ -41,7 +43,7 @@ final class VerificationIssuer {
     try {
       $id = $this->repository->insert($values);
       $public = $values;
-      unset($public['token_hash'], $public['created_ip_hash']);
+      unset($public['token_hash'], $public['code_hash'], $public['created_ip_hash']);
       $public['id'] = $id;
       $public['status'] = 'pending';
       $public['metadata'] = $input['metadata'] ?? NULL;
@@ -52,7 +54,7 @@ final class VerificationIssuer {
       $tx->rollback();
       throw $e;
     }
-    return $public + ['token' => $rawToken];
+    return $public + ['token' => $rawToken, 'code' => $code];
   }
 
   private function validate(array $input): void {

@@ -101,6 +101,23 @@ try {
   $unknownResult = $api('verify', ['token' => str_repeat('x', 43)])[0]['result'];
   $assert($unknownResult === 'invalid', 'Unknown token was not invalid.');
 
+  $codeIssued = $api('issue', [
+    'purpose' => 'integration.code',
+    'contactId' => $contactId,
+    'ttl' => 600,
+  ])[0];
+  $tokenIds[] = (int) $codeIssued['id'];
+  $assert(preg_match('/^[0-9]{6}$/', $codeIssued['code']) === 1, 'Verification code format is invalid.');
+  $wrongCode = str_pad((string) (((int) $codeIssued['code'] + 1) % 1000000), 6, '0', STR_PAD_LEFT);
+  $assert(
+    $api('verifyCode', ['uuid' => $codeIssued['uuid'], 'code' => $wrongCode])[0]['result'] === 'invalid',
+    'An incorrect verification code was accepted.'
+  );
+  $assert(
+    $api('verifyCode', ['uuid' => $codeIssued['uuid'], 'code' => $codeIssued['code']])[0]['result'] === 'verified',
+    'The verification code was not accepted.'
+  );
+
   $revocable = $api('issue', [
     'purpose' => 'integration.revoke',
     'contactId' => $contactId,

@@ -11,6 +11,9 @@ final class CRM_CiviVerify_WorkflowMessage_Confirmation extends GenericWorkflowM
   /** @var string @scope tokenContext as civiverifyConfirmationUrl, tplParams as civiverifyConfirmationUrl */
   public string $confirmationUrl = '';
 
+  /** @var string @scope tokenContext as civiverifyConfirmationCode, tplParams as civiverifyConfirmationCode */
+  public string $confirmationCode = '';
+
   /** @var string @scope tokenContext as civiverifyExpiresDate, tplParams as civiverifyExpiresDate */
   public string $expiresDate = '';
 
