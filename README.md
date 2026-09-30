@@ -135,6 +135,7 @@ $sent = \Civi\Api4\CiviVerifyToken::issueAndSend(FALSE)
   ->setEntityId(4711)
   ->setTtl(86400)
   ->setWorkflowName('civiverify_confirmation')
+  ->setMessageTemplateId(42) // Optional: select this active, non-reserved template.
   ->setTargetKey('website_test') // Optional: an existing configured target key.
   ->setTemplateParams(['productLabel' => 'Managed CiviCRM'])
   ->execute()
@@ -143,7 +144,7 @@ $sent = \Civi\Api4\CiviVerifyToken::issueAndSend(FALSE)
 // $sent contains delivery and verification metadata, but no raw token or URL.
 ```
 
-`issueAndSend` uses the contact's primary email address unless `emailId` selects another address belonging to the same contact. It deliberately has no arbitrary recipient parameter. Select either a stable `workflowName` or a concrete `messageTemplateId`, never both. `targetKey` is optional: without it, the selected workflow's configured target is used; with it, the key must name an existing trusted confirmation target maintained under **Administration → CiviVerify**. Callers can never provide a route or URL themselves. If mail delivery fails, the newly issued verification is immediately revoked. Use `issue` instead when an external system owns delivery.
+`issueAndSend` uses the contact's primary email address unless `emailId` selects another address belonging to the same contact. It deliberately has no arbitrary recipient parameter. `workflowName` is required for the verification purpose, audit trail, and confirmation-target registration. Optionally pass a positive `messageTemplateId` to send with that exact active, non-reserved CiviCRM template; it overrides only the default-template lookup for the workflow. CiviVerify does not choose a template by language. Without `messageTemplateId`, the active default template for `workflowName` is used as before. `targetKey` is optional: without it, the workflow's configured target is used; with it, the key must name an existing trusted confirmation target maintained under **Administration → CiviVerify**. Callers can never provide a route or URL themselves. If mail delivery fails, the newly issued verification is immediately revoked. Use `issue` instead when an external system owns delivery.
 
 Every new verification has both the high-entropy link token and a six-digit one-time code. `issue` returns the code once alongside the public UUID; `issueAndSend` makes it available only to the message template as `{civiverify.confirmation_code}` or `{$civiverifyConfirmationCode}` and never returns it to the caller. A frontend which started the flow retains the UUID in its own short-lived session and calls `CiviVerifyToken.verifyCode` with that UUID and the entered six digits. The code is not stored in cleartext, expires and is revoked together with its link token, and consumes the same verification exactly once.
 

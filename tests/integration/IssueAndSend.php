@@ -56,6 +56,7 @@ try {
     'entityName' => 'Contact',
     'entityId' => $contactId,
     'ttl' => 600,
+    'workflowName' => 'civiverify_confirmation',
     'templateParams' => ['integrationMarker' => 'safe custom value'],
   ])->single();
   $tokenIds[] = (int) $sent['id'];
@@ -83,12 +84,13 @@ try {
 
   $customTemplate = \Civi\Api4\MessageTemplate::create(FALSE)
     ->addValue('msg_title', 'CiviVerify integration custom template')
-    ->addValue('msg_subject', 'Custom verification {$integrationMarker}')
+    ->addValue('msg_subject', 'Custom verification {$integrationMarker} {civiverify.expires_date}')
     ->addValue(
       'msg_html',
-      '<p>{$integrationMarker}</p><p><a href="{$civiverifyConfirmationUrl}">Verify</a></p>'
+      '<p>{$integrationMarker}</p><p><a href="{civiverify.confirmation_url}">Verify</a></p>'
+      . '<p>{civiverify.expires_date}</p>'
     )
-    ->addValue('is_default', TRUE)
+    ->addValue('is_default', FALSE)
     ->addValue('is_reserved', FALSE)
     ->addValue('is_active', TRUE)
     ->execute()
@@ -98,6 +100,7 @@ try {
     'checkPermissions' => FALSE,
     'purpose' => 'integration.custom_template',
     'contactId' => $contactId,
+    'workflowName' => 'civiverify_confirmation',
     'messageTemplateId' => (int) $customTemplate['id'],
     'templateParams' => ['integrationMarker' => 'custom-template-marker'],
   ])->single();
@@ -110,6 +113,14 @@ try {
   $assert(
     is_string($customMail) && str_contains($customMail, 'custom-template-marker'),
     'Additional template parameters were not rendered.'
+  );
+  $assert(
+    is_string($customMail) && preg_match('~/civicrm/verify\?token=[A-Za-z0-9_-]{43}~', $customMail) === 1,
+    'The confirmation URL was not rendered in the explicit template.'
+  );
+  $assert(
+    is_string($customMail) && str_contains($customMail, (string) $customSent['expires_date']),
+    'The expiry date was not rendered in the explicit template.'
   );
 
   \Civi::settings()->set('civiverify_confirmation_targets', [
@@ -124,6 +135,7 @@ try {
     'checkPermissions' => FALSE,
     'purpose' => 'integration.target_key',
     'contactId' => $contactId,
+    'workflowName' => 'civiverify_confirmation',
     'targetKey' => 'integration_target',
   ])->single();
   $tokenIds[] = (int) $targetSent['id'];
@@ -150,6 +162,7 @@ try {
       'checkPermissions' => FALSE,
       'purpose' => 'integration.invalid_template',
       'contactId' => $contactId,
+      'workflowName' => 'civiverify_confirmation',
       'messageTemplateId' => (int) $invalidTemplate['id'],
     ]);
     throw new RuntimeException('A template without the confirmation URL unexpectedly succeeded.');
@@ -161,6 +174,40 @@ try {
     );
   }
   $assert($tokenCount() === $beforeRejected, 'Template validation issued an unusable token.');
+
+  foreach ([
+    ['title' => 'inactive', 'active' => FALSE, 'reserved' => FALSE, 'message' => 'inactive'],
+    ['title' => 'reserved', 'active' => TRUE, 'reserved' => TRUE, 'message' => 'reserved'],
+  ] as $rejectedTemplate) {
+    $template = \Civi\Api4\MessageTemplate::create(FALSE)
+      ->addValue('msg_title', 'CiviVerify integration ' . $rejectedTemplate['title'] . ' template')
+      ->addValue('msg_subject', 'Unavailable template')
+      ->addValue('msg_html', '<p>{civiverify.confirmation_url}</p>')
+      ->addValue('is_default', FALSE)
+      ->addValue('is_reserved', $rejectedTemplate['reserved'])
+      ->addValue('is_active', $rejectedTemplate['active'])
+      ->execute()
+      ->single();
+    $templateIds[] = (int) $template['id'];
+    $beforeRejected = $tokenCount();
+    try {
+      civicrm_api4('CiviVerifyToken', 'issueAndSend', [
+        'checkPermissions' => FALSE,
+        'purpose' => 'integration.' . $rejectedTemplate['title'] . '_template',
+        'contactId' => $contactId,
+        'workflowName' => 'civiverify_confirmation',
+        'messageTemplateId' => (int) $template['id'],
+      ]);
+      throw new RuntimeException('An unavailable template unexpectedly succeeded.');
+    }
+    catch (CRM_Core_Exception $e) {
+      $assert(
+        str_contains($e->getMessage(), $rejectedTemplate['message']),
+        'The unavailable template failed for an unexpected reason.'
+      );
+    }
+    $assert($tokenCount() === $beforeRejected, 'An unavailable template issued a token.');
+  }
 
   printf("PASS: CiviVerify issueAndSend integration test (%d assertions)\n", $assertions);
 }

@@ -488,3 +488,27 @@ msgstr "Nächste Zustellung"
 
 msgid "Last error"
 msgstr "Letzter Fehler"
+
+msgid "A workflow name is required."
+msgstr "Ein Workflow-Name ist erforderlich."
+
+msgid "Workflow name is invalid."
+msgstr "Der Workflow-Name ist ungültig."
+
+msgid "Message template ID must be a positive integer."
+msgstr "Die ID der Nachrichtenvorlage muss eine positive Ganzzahl sein."
+
+msgid "The active default message template for this workflow does not exist."
+msgstr "Die aktive Standard-Nachrichtenvorlage für diesen Workflow existiert nicht."
+
+msgid "The selected message template does not exist."
+msgstr "Die ausgewählte Nachrichtenvorlage existiert nicht."
+
+msgid "The selected message template is reserved and cannot be used."
+msgstr "Die ausgewählte Nachrichtenvorlage ist reserviert und kann nicht verwendet werden."
+
+msgid "The selected message template is inactive."
+msgstr "Die ausgewählte Nachrichtenvorlage ist inaktiv."
+
+msgid "The message template must contain the CiviVerify confirmation URL token."
+msgstr "Die Nachrichtenvorlage muss den CiviVerify-Token für die Bestätigungs-URL enthalten."

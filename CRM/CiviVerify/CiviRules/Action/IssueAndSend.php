@@ -18,13 +18,16 @@ final class CRM_CiviVerify_CiviRules_Action_IssueAndSend extends CRM_Civirules_A
       'checkPermissions' => FALSE,
       'purpose' => (string) ($config['purpose'] ?? ''),
       'contactId' => $contactId,
+      // Older CiviRules configurations could select a template without a
+      // workflow. Preserve them by associating that delivery with the default
+      // CiviVerify workflow.
+      'workflowName' => !empty($config['workflow_name'])
+        ? (string) $config['workflow_name']
+        : 'civiverify_confirmation',
       'ttl' => (int) ($config['ttl'] ?? Civi::settings()->get('civiverify_default_ttl')),
       'templateParams' => $config['template_params'] ?? [],
     ];
-    if (!empty($config['workflow_name'])) {
-      $params['workflowName'] = (string) $config['workflow_name'];
-    }
-    elseif (!empty($config['message_template_id'])) {
+    if (!empty($config['message_template_id'])) {
       $params['messageTemplateId'] = (int) $config['message_template_id'];
     }
     $entityName = trim((string) ($config['entity_name'] ?? ''));

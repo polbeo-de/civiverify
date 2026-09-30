@@ -20,8 +20,11 @@ use Civi\Api4\Generic\Result;
  * @method $this setTtl(?int $ttl)
  * @method array|null getMetadata()
  * @method $this setMetadata(?array $metadata)
- * @method string|null getWorkflowName()
- * @method $this setWorkflowName(?string $workflowName)
+ * @method string getWorkflowName()
+ * @method $this setWorkflowName(string $workflowName)
+ *
+ * `workflowName` identifies the verification workflow and remains required
+ * even when `messageTemplateId` selects the concrete mail template.
  * @method int|null getMessageTemplateId()
  * @method $this setMessageTemplateId(?int $messageTemplateId)
  * @method int|null getEmailId()
@@ -43,7 +46,8 @@ final class IssueAndSend extends AbstractAction {
   protected ?int $entityId = NULL;
   protected ?int $ttl = NULL;
   protected ?array $metadata = NULL;
-  protected ?string $workflowName = NULL;
+  /** @required */
+  protected string $workflowName = '';
   protected ?int $messageTemplateId = NULL;
   protected ?int $emailId = NULL;
   protected ?array $templateParams = NULL;

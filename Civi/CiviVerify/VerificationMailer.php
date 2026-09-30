@@ -8,6 +8,7 @@ use Civi\Api4\Contact;
 use Civi\Api4\Email;
 use Civi\Api4\MessageTemplate;
 use Civi\WorkflowMessage\WorkflowMessage;
+use CRM_CiviVerify_ExtensionUtil as E;
 
 final class VerificationMailer {
 
@@ -26,13 +27,14 @@ final class VerificationMailer {
       throw new \CRM_Core_Exception('A recipient contact is required.');
     }
     $recipient = $this->resolveRecipient($contactId, $input['email_id'] ?? NULL);
+    $workflowName = $this->validateWorkflowName($input['workflow_name'] ?? NULL);
     $template = $this->resolveTemplate(
-      $input['workflow_name'] ?? NULL,
+      $workflowName,
       $input['message_template_id'] ?? NULL,
       $recipient['preferred_language']
     );
     $templateParams = $this->validateTemplateParams($input['template_params'] ?? []);
-    $draft = $this->draftRegistry->draft((string) $template['workflow_name']);
+    $draft = $this->draftRegistry->draft($workflowName);
     $targetKey = trim((string) ($input['target_key'] ?? ''));
     $target = $targetKey === '' ? $draft['target'] : $this->draftRegistry->target($targetKey);
 
@@ -71,7 +73,7 @@ final class VerificationMailer {
     ]);
 
     try {
-      $model = WorkflowMessage::create($template['render_workflow'], [
+      $model = WorkflowMessage::create($workflowName, [
         'tokenContext' => $context,
         'tplParams' => $templateParams,
         'envelope' => [
@@ -102,7 +104,7 @@ final class VerificationMailer {
     return $issued + [
       'mail_status' => 'sent',
       'message_template_id' => (int) $template['id'],
-      'workflow_name' => $template['workflow_name'],
+      'workflow_name' => $workflowName,
       'email_id' => (int) $recipient['email_id'],
     ];
   }
@@ -166,16 +168,26 @@ final class VerificationMailer {
     ];
   }
 
-  private function resolveTemplate(mixed $workflowName, mixed $messageTemplateId, ?string $language): array {
-    $workflowName = trim((string) ($workflowName ?? '')) ?: NULL;
-    $messageTemplateId = $messageTemplateId === NULL ? NULL : (int) $messageTemplateId;
-    if ($workflowName !== NULL && $messageTemplateId !== NULL) {
-      throw new \CRM_Core_Exception('Supply either workflowName or messageTemplateId, not both.');
+  private function validateWorkflowName(mixed $workflowName): string {
+    $workflowName = trim((string) ($workflowName ?? ''));
+    if ($workflowName === '') {
+      throw new \CRM_Core_Exception(E::ts('A workflow name is required.'));
     }
-    if ($workflowName !== NULL && !preg_match('/^[a-z][a-z0-9_]{0,127}$/', $workflowName)) {
-      throw new \CRM_Core_Exception('Workflow name is invalid.');
+    if (!preg_match('/^[a-z][a-z0-9_]{0,127}$/', $workflowName)) {
+      throw new \CRM_Core_Exception(E::ts('Workflow name is invalid.'));
     }
-    $workflowName ??= self::DEFAULT_WORKFLOW;
+    return $workflowName;
+  }
+
+  private function resolveTemplate(string $workflowName, mixed $messageTemplateId, ?string $language): array {
+    if ($messageTemplateId !== NULL) {
+      $messageTemplateId = (int) $messageTemplateId;
+      if ($messageTemplateId < 1) {
+        throw new \CRM_Core_Exception(E::ts('Message template ID must be a positive integer.'));
+      }
+      return $this->loadExplicitTemplate($messageTemplateId);
+    }
+
     $query = MessageTemplate::get(FALSE)
       ->setLanguage($language)
       ->setTranslationMode('fuzzy')
@@ -184,23 +196,42 @@ final class VerificationMailer {
       ->addWhere('is_reserved', '=', FALSE)
       ->addWhere('is_active', '=', TRUE)
       ->setLimit(1);
-    if ($messageTemplateId !== NULL) {
-      $query->addWhere('id', '=', $messageTemplateId);
-    }
-    else {
-      $query->addWhere('workflow_name', '=', $workflowName);
-    }
+    $query->addWhere('workflow_name', '=', $workflowName);
     $template = $query->execute()->first();
     if (!$template) {
-      throw new \CRM_Core_Exception('The selected active message template does not exist.');
+      throw new \CRM_Core_Exception(E::ts('The active default message template for this workflow does not exist.'));
     }
+    $this->validateTemplateTokens($template);
+    return $template;
+  }
+
+  /** Load exactly the template selected by the calling extension, without language fallback. */
+  private function loadExplicitTemplate(int $messageTemplateId): array {
+    $template = MessageTemplate::get(FALSE)
+      ->addSelect('id', 'workflow_name', 'msg_subject', 'msg_text', 'msg_html', 'is_active', 'is_reserved')
+      ->addWhere('id', '=', $messageTemplateId)
+      ->setLimit(1)
+      ->execute()
+      ->first();
+    if (!$template) {
+      throw new \CRM_Core_Exception(E::ts('The selected message template does not exist.'));
+    }
+    if (!empty($template['is_reserved'])) {
+      throw new \CRM_Core_Exception(E::ts('The selected message template is reserved and cannot be used.'));
+    }
+    if (empty($template['is_active'])) {
+      throw new \CRM_Core_Exception(E::ts('The selected message template is inactive.'));
+    }
+    $this->validateTemplateTokens($template);
+    return $template;
+  }
+
+  private function validateTemplateTokens(array $template): void {
     $body = (string) ($template['msg_text'] ?? '') . (string) ($template['msg_html'] ?? '');
     if (!str_contains($body, '{civiverify.confirmation_url}')
       && !str_contains($body, '{$civiverifyConfirmationUrl}')) {
-      throw new \CRM_Core_Exception('The message template must contain the CiviVerify confirmation URL token.');
+      throw new \CRM_Core_Exception(E::ts('The message template must contain the CiviVerify confirmation URL token.'));
     }
-    $template['render_workflow'] = (string) ($template['workflow_name'] ?: self::DEFAULT_WORKFLOW);
-    return $template;
   }
 
   private function validateTemplateParams(mixed $params): array {
