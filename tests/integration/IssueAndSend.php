@@ -123,6 +123,32 @@ try {
     'The expiry date was not rendered in the explicit template.'
   );
 
+  $englishTemplate = \Civi\Api4\MessageTemplate::create(FALSE)
+    ->addValue('workflow_name', 'civiverify_confirmation_en')
+    ->addValue('msg_title', 'CiviVerify integration English template')
+    ->addValue('msg_subject', 'English verification {civiverify.expires_date}')
+    ->addValue('msg_html', '<p><a href="{civiverify.confirmation_url}">Verify</a></p><p>{civiverify.expires_date}</p>')
+    ->addValue('is_default', FALSE)
+    ->addValue('is_reserved', FALSE)
+    ->addValue('is_active', TRUE)
+    ->execute()
+    ->single();
+  $templateIds[] = (int) $englishTemplate['id'];
+  $englishSent = civicrm_api4('CiviVerifyToken', 'issueAndSend', [
+    'checkPermissions' => FALSE,
+    'purpose' => 'integration.english_template',
+    'contactId' => $contactId,
+    'workflowName' => 'civiverify_confirmation',
+    'messageTemplateId' => (int) $englishTemplate['id'],
+  ])->single();
+  $tokenIds[] = (int) $englishSent['id'];
+  $englishMail = file_get_contents($mailLog);
+  $assert(
+    is_string($englishMail) && preg_match('/[A-Za-z]+ \d{1,2}, \d{4}, \d{1,2}:\d{2} [AP]M/', $englishMail) === 1,
+    'The explicit English template did not receive an English expiry date.'
+  );
+  $assert(!str_contains((string) $englishMail, 'Uhr'), 'The explicit English template received a German expiry date.');
+
   \Civi::settings()->set('civiverify_confirmation_targets', [
     ['key' => 'civicrm', 'label' => 'CiviCRM', 'route' => 'civicrm/verify'],
     [

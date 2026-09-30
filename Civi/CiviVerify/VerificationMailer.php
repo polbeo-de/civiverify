@@ -50,7 +50,7 @@ final class VerificationMailer {
     $confirmationUrl = $this->urlBuilder->build($issued['token'], $target);
     $expiresDate = $this->formatExpiresDate(
       (string) $issued['expires_date'],
-      $recipient['preferred_language']
+      $this->templateLanguage($template, $recipient['preferred_language'])
     );
     $context = [
       'contactId' => $contactId,
@@ -109,9 +109,9 @@ final class VerificationMailer {
     ];
   }
 
-  /** Format the expiry timestamp for the recipient-facing mail tokens. */
+  /** Format the expiry timestamp for the language of the rendered template. */
   private function formatExpiresDate(string $value, ?string $language): string {
-    if (!preg_match('/^de(?:_|$)/i', (string) $language) || !class_exists(\IntlDateFormatter::class)) {
+    if (!class_exists(\IntlDateFormatter::class)) {
       return $value;
     }
     $date = \DateTimeImmutable::createFromFormat(
@@ -122,15 +122,35 @@ final class VerificationMailer {
     if (!$date) {
       return $value;
     }
+    $format = match (strtolower((string) $language)) {
+      'de', 'de_de' => ['de_DE', "d. MMMM y, HH:mm 'Uhr'"],
+      'en', 'en_us' => ['en_US', 'MMMM d, y, h:mm a'],
+      'fr', 'fr_fr' => ['fr_FR', "d MMMM y 'à' HH:mm"],
+      'sv', 'sv_se' => ['sv_SE', "d MMMM y 'kl.' HH:mm"],
+      default => NULL,
+    };
+    if ($format === NULL) {
+      return $value;
+    }
+    [$locale, $pattern] = $format;
     $formatter = new \IntlDateFormatter(
-      'de_DE',
+      $locale,
       \IntlDateFormatter::NONE,
       \IntlDateFormatter::NONE,
       'UTC',
       \IntlDateFormatter::GREGORIAN,
-      "d. MMMM y, HH:mm 'Uhr'"
+      $pattern
     );
     return $formatter->format($date) ?: $value;
+  }
+
+  /** Prefer the concrete template's language suffix over the contact profile. */
+  private function templateLanguage(array $template, ?string $fallback): ?string {
+    $workflow = (string) ($template['workflow_name'] ?? '');
+    if (preg_match('/_([a-z]{2})(?:_[a-z]{2})?$/i', $workflow, $matches)) {
+      return strtolower($matches[1]);
+    }
+    return $fallback;
   }
 
   private function resolveRecipient(int $contactId, mixed $emailId): array {

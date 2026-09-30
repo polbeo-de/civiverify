@@ -6,6 +6,16 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.8 - 2026-10-01
+
+- Prepare the CiviVerify expiry-date token for French and Swedish templates.
+
+## 0.1.7 - 2026-10-01
+
+- Format verification-link expiry dates according to the explicitly selected
+  mail template language. English Polishub messages therefore no longer show
+  the German date format.
+
 ## 0.1.6 - 2026-10-01
 
 - Allow `CiviVerifyToken.issueAndSend` callers to keep their required
