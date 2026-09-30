@@ -6,6 +6,13 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.6 - 2026-10-01
+
+- Allow `CiviVerifyToken.issueAndSend` callers to keep their required
+  `workflowName` while explicitly selecting one active, non-reserved CiviCRM
+  message template via `messageTemplateId`. This permits language-aware
+  calling extensions without adding language selection to CiviVerify.
+
 ## 0.1.5 - 2026-09-24
 
 - Limit failed six-digit code attempts to five. The whole verification is then

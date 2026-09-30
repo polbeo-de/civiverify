@@ -525,3 +525,27 @@ msgstr ""
 
 msgid "Confirm"
 msgstr ""
+
+msgid "A workflow name is required."
+msgstr ""
+
+msgid "Workflow name is invalid."
+msgstr ""
+
+msgid "Message template ID must be a positive integer."
+msgstr ""
+
+msgid "The active default message template for this workflow does not exist."
+msgstr ""
+
+msgid "The selected message template does not exist."
+msgstr ""
+
+msgid "The selected message template is reserved and cannot be used."
+msgstr ""
+
+msgid "The selected message template is inactive."
+msgstr ""
+
+msgid "The message template must contain the CiviVerify confirmation URL token."
+msgstr ""
