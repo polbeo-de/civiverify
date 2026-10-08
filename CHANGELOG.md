@@ -6,6 +6,10 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+- Allow `CiviVerifyToken.issue` callers to select an existing configured
+  confirmation target via `targetKey`. This enables controlled non-email
+  delivery of copyable links without accepting caller-provided URLs.
+
 ## 0.1.6 - 2026-10-01
 
 - Allow `CiviVerifyToken.issueAndSend` callers to keep their required

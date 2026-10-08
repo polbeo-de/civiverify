@@ -22,6 +22,8 @@ use Civi\Api4\Generic\Result;
  * @method $this setMetadata(?array $metadata)
  * @method bool getAllowUnbound()
  * @method $this setAllowUnbound(bool $allowUnbound)
+ * @method string|null getTargetKey()
+ * @method $this setTargetKey(?string $targetKey)
  */
 final class Issue extends AbstractAction {
 
@@ -33,6 +35,7 @@ final class Issue extends AbstractAction {
   protected ?int $ttl = NULL;
   protected ?array $metadata = NULL;
   protected bool $allowUnbound = FALSE;
+  protected ?string $targetKey = NULL;
 
   public function _run(Result $result): void {
     $issued = \Civi::service('civiverify.issuer')->issue([
@@ -44,7 +47,11 @@ final class Issue extends AbstractAction {
       'metadata' => $this->metadata,
       'allow_unbound' => $this->allowUnbound,
     ]);
-    $issued['confirmation_url'] = \Civi::service('civiverify.confirmation_url_builder')->build($issued['token']);
+    $targetKey = trim((string) ($this->targetKey ?? ''));
+    $target = $targetKey === ''
+      ? NULL
+      : \Civi::service('civiverify.verify_draft_registry')->target($targetKey);
+    $issued['confirmation_url'] = \Civi::service('civiverify.confirmation_url_builder')->build($issued['token'], $target);
     $result[] = $issued;
   }
 
