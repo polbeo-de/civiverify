@@ -6,6 +6,9 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+- Provide the verification expiry token as the unformatted UTC database value.
+  Localized message templates remain solely responsible for display format.
+
 ## 0.1.6 - 2026-10-01
 
 - Allow `CiviVerifyToken.issueAndSend` callers to keep their required
