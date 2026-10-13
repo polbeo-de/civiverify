@@ -117,6 +117,7 @@ $issued = \Civi\Api4\CiviVerifyToken::issue(FALSE)
   ->setEntityName('Case')
   ->setEntityId(4711)
   ->setTtl(86400)
+  ->setTargetKey('website_test') // Optional: an existing trusted confirmation target.
   ->setMetadata(['product' => 'civicrm_instance'])
   ->execute()
   ->single();
@@ -124,6 +125,11 @@ $issued = \Civi\Api4\CiviVerifyToken::issue(FALSE)
 // $issued['token'] and $issued['confirmation_url'] exist only in this response.
 // $issued['code'] is a six-digit alternate credential for $issued['uuid'].
 ```
+
+`issue` accepts the same optional `targetKey` as `issueAndSend`. The key must
+refer to an existing administrator-managed confirmation target; callers cannot
+provide arbitrary route URLs. This supports controlled, non-email delivery of a
+copyable one-time link.
 
 Issue a token and send it through CiviCRM's transactional message system:
 
