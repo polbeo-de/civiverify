@@ -6,9 +6,14 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
-- Allow `CiviVerifyToken.issue` callers to select an existing configured
-  confirmation target via `targetKey`. This enables controlled non-email
-  delivery of copyable links without accepting caller-provided URLs.
+ - Allow `CiviVerifyToken.issue` callers to select an existing configured
+   confirmation target via `targetKey`. This enables controlled non-email
+   delivery of copyable links without accepting caller-provided URLs.
+
+## 0.1.7 - 2026-10-13
+
+- Provide the verification expiry token as the unformatted UTC database value.
+  Localized message templates remain solely responsible for display format.
 
 ## 0.1.6 - 2026-10-01
 
