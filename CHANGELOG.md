@@ -6,6 +6,8 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.7 - 2026-10-13
+
 - Provide the verification expiry token as the unformatted UTC database value.
   Localized message templates remain solely responsible for display format.
 
