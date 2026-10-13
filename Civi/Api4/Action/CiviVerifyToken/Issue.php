@@ -51,7 +51,8 @@ final class Issue extends AbstractAction {
     $target = $targetKey === ''
       ? NULL
       : \Civi::service('civiverify.verify_draft_registry')->target($targetKey);
-    $issued['confirmation_url'] = \Civi::service('civiverify.confirmation_url_builder')->build($issued['token'], $target);
+    $issued['confirmation_url'] = \Civi::service('civiverify.confirmation_url_builder')
+      ->build($issued['token'], $target);
     $result[] = $issued;
   }
 
