@@ -6,9 +6,9 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
-- Add optional `targetKey` support to `CiviVerifyToken.issue`, matching
-  `issueAndSend`. This lets callers choose an existing configured confirmation
-  target for controlled non-email delivery of copyable links.
+- Correct the release notes: optional `targetKey` support in
+  `CiviVerifyToken.issue`, matching `issueAndSend`, was already included in
+  0.1.7.
 
 ## 0.1.7 - 2026-10-13
 
