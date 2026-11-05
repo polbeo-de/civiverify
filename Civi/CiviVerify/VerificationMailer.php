@@ -79,7 +79,13 @@ final class VerificationMailer {
           'toEmail' => $recipient['email'],
           'toName' => $recipient['display_name'],
           'from' => \CRM_Core_BAO_Domain::getFromEmail(),
-          'messageTemplateID' => (int) $template['id'],
+          // Reuse the exact, already validated localized template. Asking
+          // WorkflowMessage to load its ID again can lose that selection.
+          'messageTemplate' => [
+            'msg_subject' => (string) $template['msg_subject'],
+            'msg_text' => (string) ($template['msg_text'] ?? ''),
+            'msg_html' => (string) ($template['msg_html'] ?? ''),
+          ],
         ],
       ]);
       [$sent, , , , $errorMessage] = $model->sendTemplate();
