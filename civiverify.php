@@ -27,6 +27,7 @@ use Civi\CiviVerify\VerificationIssuer;
 use Civi\CiviVerify\VerificationManager;
 use Civi\CiviVerify\VerificationMailer;
 use Civi\CiviVerify\VerificationRepository;
+use Civi\CiviVerify\VerificationRedeemer;
 use Civi\CiviVerify\VerificationVerifier;
 use Civi\CiviVerify\VerifyDraftRegistry;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -60,6 +61,13 @@ function civiverify_civicrm_container(ContainerBuilder $container): void {
     ])
     ->setPublic(TRUE);
   $container->register('civiverify.verifier', VerificationVerifier::class)
+    ->setArguments([
+      new Reference('civiverify.repository'),
+      new Reference('civiverify.outbox'),
+      new Reference('civiverify.token_hasher'),
+    ])
+    ->setPublic(TRUE);
+  $container->register('civiverify.redeemer', VerificationRedeemer::class)
     ->setArguments([
       new Reference('civiverify.repository'),
       new Reference('civiverify.outbox'),

@@ -6,6 +6,15 @@ first and moved into a dated release section when deployed.
 
 ## Unreleased
 
+## 0.1.8 - 2026-11-05
+
+- Add the trusted PHP service `civiverify.redeemer` for atomic token
+  redemption with a consuming extension's local database changes. It locks and
+  validates the token and expected generic bindings, rolls back callback
+  failures, and persists consumption plus the verified outbox event only on
+  success.
+- Preserve the already selected message-template content while sending, so
+  CiviCRM does not re-resolve it through an inconsistent template ID.
 - Correct the release notes: optional `targetKey` support in
   `CiviVerifyToken.issue`, matching `issueAndSend`, was already included in
   0.1.7.

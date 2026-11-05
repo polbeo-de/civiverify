@@ -50,6 +50,14 @@ final class VerificationRepository {
     return $this->find('token_hash = %1', [1 => [$hash, 'String']]);
   }
 
+  /**
+   * Return a sanitized token record while holding its row lock for the
+   * caller's current transaction.
+   */
+  public function findByHashForUpdate(string $hash): ?array {
+    return $this->find('token_hash = %1', [1 => [$hash, 'String']], TRUE);
+  }
+
   public function findByUuidAndCodeHash(string $uuid, string $hash): ?array {
     return $this->find('uuid = %1 AND code_hash = %2', [
       1 => [$uuid, 'String'],
@@ -71,6 +79,22 @@ final class VerificationRepository {
        WHERE token_hash = ' . $hashPlaceholder . ' AND status = ' . $pendingPlaceholder . '
          AND used_date IS NULL AND revoked_date IS NULL AND expires_date > %2',
       $params
+    );
+    return $dao->affectedRows() === 1;
+  }
+
+  /** Consume a row which has already been locked by the caller. */
+  public function consumeLocked(int $id, string $usedDate): bool {
+    $dao = \CRM_Core_DAO::executeQuery(
+      'UPDATE ' . self::TABLE . '
+       SET status = %1, used_date = %2, use_count = use_count + 1
+       WHERE id = %3 AND status = %4 AND used_date IS NULL AND revoked_date IS NULL AND expires_date > %2',
+      [
+        1 => ['used', 'String'],
+        2 => [$usedDate, 'String'],
+        3 => [$id, 'Integer'],
+        4 => ['pending', 'String'],
+      ]
     );
     return $dao->affectedRows() === 1;
   }
@@ -198,8 +222,11 @@ final class VerificationRepository {
     return $dao->affectedRows();
   }
 
-  private function find(string $where, array $params): ?array {
-    $dao = \CRM_Core_DAO::executeQuery('SELECT * FROM ' . self::TABLE . ' WHERE ' . $where . ' LIMIT 1', $params);
+  private function find(string $where, array $params, bool $forUpdate = FALSE): ?array {
+    $dao = \CRM_Core_DAO::executeQuery(
+      'SELECT * FROM ' . self::TABLE . ' WHERE ' . $where . ' LIMIT 1' . ($forUpdate ? ' FOR UPDATE' : ''),
+      $params
+    );
     if (!$dao->fetch()) {
       return NULL;
     }

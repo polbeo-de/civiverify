@@ -168,6 +168,44 @@ cv api4 CiviVerifyToken.verify token='RAW_TOKEN'
 
 Standard create/update/delete require the administrative permission. Token creation should always use `issue`; only it returns a raw token. `inspect` never returns a raw token or digest.
 
+## Atomic redemption for extensions
+
+Trusted extension code can redeem a raw link token together with its own local
+database change. CiviVerify owns the token lifecycle and transaction boundary;
+the calling extension owns its business data and callback logic. This is a PHP
+service, not an API action, and does not grant external users token-management
+access.
+
+```php
+$result = \Civi::service('civiverify.redeemer')->redeem(
+  $rawToken,
+  [
+    'purpose' => 'example.confirmation',
+    'contact_id' => $contactId,
+    // 'entity_name' => 'ExampleEntity',
+    // 'entity_id' => $entityId,
+  ],
+  static function (array $verification): void {
+    // Make only local database changes here.
+  }
+);
+```
+
+Every expected-binding key is optional; supplied keys must match exactly. The
+callback receives a sanitized verification record and never receives the raw
+token, either token digest, or an IP digest. CiviVerify locks the matching
+token row, validates its pending state, expiry, and expected bindings, invokes
+the callback, then marks the token `used` and queues `civiverify.token.verified`
+in the same transaction. If the callback throws, all of those changes roll
+back and the token remains pending. A later redemption returns `already_used`
+after a successful redemption; expired and revoked tokens return their normal
+stable statuses.
+
+Keep callbacks idempotent and limited to local transactional writes. Do not
+send mail, call HTTP services, or perform another irreversible external side
+effect in a callback; defer those operations to the consuming extension's own
+post-commit handling or outbox.
+
 ## Public confirmation flow
 
 `confirmation_url` targets `/civicrm/verify?token=…`. A GET only previews the verification and writes the raw token to CiviCRM's server-side cache for at most ten minutes under a random nonce. The HTML contains the nonce, not the token. Only the subsequent explicit POST consumes it. This prevents mail scanners and link prefetchers from confirming requests.
@@ -235,18 +273,13 @@ The selected template must contain either `{civiverify.confirmation_url}` or `{$
 
 Their Smarty equivalents use camel case, for example `{$civiverifyPurpose}`. Normal CiviCRM contact, domain, and site tokens remain available. Callers may provide additional JSON-compatible Smarty parameters through `templateParams`; names beginning with `civiverify` are reserved.
 
-## Example case integration (not built in)
+## Integration boundary
 
-1. FormProcessor creates a Case in “email confirmation pending”.
-2. Integration code calls `CiviVerifyToken.issue` with `purpose=provision_order`, Case ID, and contact ID.
-3. The transactional message includes `confirmation_url`.
-4. The customer opens the link and explicitly confirms.
-5. `civiverify.token.verified` fires.
-6. The outbox job dispatches `civiverify.token.verified`.
-7. A purpose- and entity-filtered CiviRules rule changes the bound Case to “provisioning requested”. A Symfony subscriber remains available when custom code is preferable.
-8. The existing queue runner provisions it.
-
-The Case status change and provisioning are deliberately outside this generic extension.
+A consuming extension issues tokens, defines their purpose and bindings, and
+owns the business records that they protect. It may use the atomic redemption
+service when its local state change must succeed before a token is consumed.
+CiviVerify never interprets purposes, changes business records, or performs
+application-specific follow-up work.
 
 ## Development and tests
 
@@ -260,9 +293,11 @@ On a disposable installation with the extension enabled, run:
 
 ```bash
 cv php:script "$PWD/tests/integration/CiviVerifyLifecycle.php"
+cv php:script "$PWD/tests/integration/AtomicRedemption.php"
 cv php:script "$PWD/tests/integration/IssueAndSend.php"
 CV="$(command -v cv)" tests/integration/run-public-endpoint.sh
 CV="$(command -v cv)" tests/integration/run-concurrency.sh
+CV="$(command -v cv)" tests/integration/run-redeem-concurrency.sh
 # With CiviRules 3.38+ enabled:
 cv php:script "$PWD/tests/integration/CiviRules.php"
 cv php:script "$PWD/tests/integration/CiviRulesIssueAndSend.php"
